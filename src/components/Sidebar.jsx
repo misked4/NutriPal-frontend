@@ -1,39 +1,73 @@
 import React from 'react'
 import { Box, Divider, List, ListItemButton, ListItemIcon, ListItemText, Switch } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import AddIcon from '@mui/icons-material/Add';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
+import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
+import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
+import MedicationLiquidOutlinedIcon from '@mui/icons-material/MedicationLiquidOutlined';
 import { theme } from "../theme";
-import {Routes, Route, useNavigate} from 'react-router-dom';
-import { Menu } from '@mui/material';
-import { MenuItem } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { Button } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { hideRightBar, unhiddenRightBar } from './../redux/rightbar/actions';
+
 const Sidebar = ({setMode, mode}) => {
+  let dispatch = useDispatch();
+
+  const [hidden, setHidden] = useState(false);
   const navigate = useNavigate();
+
+
+  const changeHidden = () => {
+    setHidden(!hidden);
+  };
 
   // #region navigate
   const navigateToHome = () => {
     navigate('/');
+    dispatch(unhiddenRightBar());
   };
   const navigateToDashboard = () => {
     navigate('/dashboard');
+    dispatch(hideRightBar());
   };
   const navigateToNews = () => {
     navigate('/news');
+    dispatch(unhiddenRightBar());
   };
-  const navigateToCreateCarte = () => {
-    navigate('/createcarte');
+  const navigateToAddingPatient = () => {
+    changeHidden();
+    navigate('/newpatient');
+    dispatch(hideRightBar());
+  };
+  const navigateToAddingRecipe = () => {
+    changeHidden();
+    navigate('/newrecipe');
+    dispatch(unhiddenRightBar());
+  };
+  const navigateToAddingFoodSchedule = () => {
+    changeHidden();
+    navigate('/newfoodschedule');
+    dispatch(hideRightBar());
+  };
+  const navigateToAddingDiet = () => {
+    changeHidden();
+    navigate('/newdiet');
+    dispatch(unhiddenRightBar());
   };
   const navigateToAchievements = () => {
     navigate('/achievements');
+    dispatch(unhiddenRightBar());
   };
   const navigateToSettings = () => {
     navigate('/settings');
+    dispatch(unhiddenRightBar());
   };
   // #endregion
   return (
@@ -46,39 +80,73 @@ const Sidebar = ({setMode, mode}) => {
         <List component="nav" aria-label="main mailbox folders">
           <ListItemButton>
             <ListItemIcon>
+              <HomeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Početna strana" onClick={navigateToHome}/>
+          </ListItemButton>
+          <ListItemButton>
+            <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
-            <ListItemText primary="Dashboard" onClick={navigateToDashboard}/>
+            <ListItemText primary="Moji pacijenti" onClick={navigateToDashboard}/>
           </ListItemButton>
           <ListItemButton>
             <ListItemIcon>
               <NewspaperIcon />
             </ListItemIcon>
-            <ListItemText primary="News" onClick={navigateToNews}/>
+            <ListItemText primary="Recepti" onClick={navigateToNews}/>
           </ListItemButton>
           <ListItemButton>
             <ListItemIcon>
-              <CreateNewFolderIcon />
+              <AddIcon />
             </ListItemIcon>
-            <ListItemText primary="Dodaj jelovnik" onClick={navigateToCreateCarte}/>
+            <ListItemText primary="Dodaj" onClick={changeHidden}/>
           </ListItemButton>
+          <>{hidden && <List style={{
+                              left: "15px"
+                            }}>
+              <Divider style={{
+                              width: "200px"
+                            }} />
+              <ListItemButton>
+                <ListItemIcon>
+                  <PersonAddAltOutlinedIcon />
+                </ListItemIcon>
+                <ListItemText primary="Novog pacijenta" onClick={navigateToAddingPatient}/>
+              </ListItemButton>
+              <ListItemButton>
+                <ListItemIcon>
+                  <MenuBookOutlinedIcon />
+                </ListItemIcon>
+                <ListItemText primary="Novi recept" onClick={navigateToAddingRecipe}/>
+              </ListItemButton>
+              <ListItemButton>
+                <ListItemIcon>
+                  <EventNoteOutlinedIcon />
+                </ListItemIcon>
+                <ListItemText primary="Respored ishrane" onClick={navigateToAddingFoodSchedule}/>
+              </ListItemButton>
+              <ListItemButton>
+                <ListItemIcon>
+                  <MedicationLiquidOutlinedIcon />
+                </ListItemIcon>
+                <ListItemText primary="Novu dijetu" onClick={navigateToAddingDiet}/>
+              </ListItemButton>
+              <Divider style={{
+                              width: "200px"
+                            }} />
+              </List>}</>
           <ListItemButton>
             <ListItemIcon>
               <EmojiEventsIcon />
             </ListItemIcon>
-            <ListItemText primary="Achievements" onClick={navigateToAchievements}/>
+            <ListItemText primary="Dostignuća" onClick={navigateToAchievements}/>
           </ListItemButton>
           <ListItemButton>
             <ListItemIcon>
               <SettingsIcon />
             </ListItemIcon>
-            <ListItemText primary="Settings" onClick={navigateToSettings}/>
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemIcon>
-              <HomeIcon />
-            </ListItemIcon>
-            <ListItemText primary="Home" onClick={navigateToHome}/>
+            <ListItemText primary="Podešavanja" onClick={navigateToSettings}/>
           </ListItemButton>
           <ListItemButton>
             <ListItemIcon>

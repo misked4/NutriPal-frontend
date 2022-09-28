@@ -1,11 +1,9 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/user/';
-
 // Register user
 const register = async(userData) => {    
     console.log("register");
-    const response = await axios.post(API_URL, userData)
+    const response = await axios.post(`${process.env.REACT_APP_API}/user`, userData)
     if(response.data){
         localStorage.setItem('user', JSON.stringify(response.data))
     }
@@ -14,8 +12,8 @@ const register = async(userData) => {
 
 // login user
 const login = async(userData) => {
-    console.log(`${API_URL}?email=${userData.email}&password=${userData.password}`);
-    const response = await axios.get(`${API_URL}?email=${userData.email}&password=${userData.password}`);
+    console.log(`${process.env.REACT_APP_API}/user/?email=${userData.email}&password=${userData.password}`);
+    const response = await axios.get(`${process.env.REACT_APP_API}/user/?email=${userData.email}&password=${userData.password}`);
     if(response.data){
         localStorage.setItem('user', JSON.stringify(response.data))
     }

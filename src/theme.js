@@ -8,6 +8,9 @@ export const theme = createTheme({
         secondary:{
             main: "#E1C391",
         },
+        third: {
+            main: "#705446",
+        },
         tan: {
             main: "#705446",
         },
@@ -19,6 +22,9 @@ export const theme = createTheme({
         },
         ebony:{
             main: "#3C3431",
+        },
+        black: {
+            main: "#000000",
         },
         otherColor:{
             main: "#FDF4E3"
