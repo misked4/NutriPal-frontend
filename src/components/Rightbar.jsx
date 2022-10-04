@@ -4,7 +4,7 @@ import { theme } from "../theme";
 
 export const Rightbar = () => {
   return (
-    <Box bgcolor={theme.palette.cream.main} flex={1.5} p={2} width={300} sx={{display:{xs:"none", sm: "block"}}}>
+    <Box bgcolor={theme.palette.cream.main} flex={1.5} p={2} width={300} sx={{display:{xs:"none", sm: "block"}, heigth:"100vmax"}}>
       <Box position="fixed">
         <Typography variant="h5" fontWeight={100}>Online friends</Typography>
         <AvatarGroup max={7}>

@@ -77,8 +77,10 @@ export const NewDiet = () => {
 
     return (
       <Box flex={4} p={2}>
-        <h1>Dobrodosli dodajte dijetu koju zelite :)</h1>
-        <Divider color="black" sx={{m:3}}/>
+        <Stack direction='row' justifyContent='center' sx={{ backgroundColor: theme.palette.secondary.main, border: "1px solid black"}}>
+            <Typography><h1>Dodajte dijetu koju zelite</h1></Typography>
+        </Stack>
+        <Divider color="black" sx={{mt: 3, mb:5}}/>
         <Stack direction="row" spacing={2}>
             <Stack 
             component="form"
@@ -121,7 +123,7 @@ export const NewDiet = () => {
                     />
             </Stack>
             <Stack direction="column" spacing={2}>
-                <Typography align="right" color={theme.palette.beige.main}>*Unesite granice UH</Typography>
+                <Typography align="right">*Unesite granice UH</Typography>
                 <Stack
                 direction="row"
                 maxrows = {2}

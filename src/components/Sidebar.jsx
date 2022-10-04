@@ -17,6 +17,11 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { hideRightBar, unhiddenRightBar } from './../redux/rightbar/actions';
 
+function changeHeight() {
+  document.getElementsByClassName("myDiv")[0].style.height = "100vmax";
+  window.scrollTo(0, 0);
+}
+
 const Sidebar = ({setMode, mode}) => {
   let dispatch = useDispatch();
 
@@ -32,48 +37,57 @@ const Sidebar = ({setMode, mode}) => {
   const navigateToHome = () => {
     navigate('/');
     dispatch(unhiddenRightBar());
+    changeHeight();
   };
   const navigateToDashboard = () => {
     navigate('/dashboard');
     dispatch(hideRightBar());
+    changeHeight();
   };
   const navigateToNews = () => {
     navigate('/news');
     dispatch(unhiddenRightBar());
+    changeHeight();
   };
   const navigateToAddingPatient = () => {
     changeHidden();
     navigate('/newpatient');
-    dispatch(hideRightBar());
+    dispatch(unhiddenRightBar());
+    changeHeight();
   };
   const navigateToAddingRecipe = () => {
     changeHidden();
     navigate('/newrecipe');
     dispatch(unhiddenRightBar());
+    changeHeight();
   };
   const navigateToAddingFoodSchedule = () => {
     changeHidden();
     navigate('/newfoodschedule');
     dispatch(hideRightBar());
+    changeHeight();
   };
   const navigateToAddingDiet = () => {
     changeHidden();
     navigate('/newdiet');
     dispatch(unhiddenRightBar());
+    changeHeight();
   };
   const navigateToAchievements = () => {
     navigate('/achievements');
-    dispatch(unhiddenRightBar());
+    dispatch(hideRightBar());
+    changeHeight();
   };
   const navigateToSettings = () => {
     navigate('/settings');
     dispatch(unhiddenRightBar());
+    changeHeight();
   };
   // #endregion
   return (
     <Box 
     bgcolor={theme.palette.secondary.main}
-    flex={0.8}
+    flex={0.9}
     padding={2}
     sx={{display:{xs:"none", sm: "block"}}}>
       <Box position="fixed">
@@ -140,7 +154,7 @@ const Sidebar = ({setMode, mode}) => {
             <ListItemIcon>
               <EmojiEventsIcon />
             </ListItemIcon>
-            <ListItemText primary="Dostignuća" onClick={navigateToAchievements}/>
+            <ListItemText primary="Postignuća" onClick={navigateToAchievements}/>
           </ListItemButton>
           <ListItemButton>
             <ListItemIcon>

@@ -1,8 +1,11 @@
 import React from 'react'
-import { Box } from '@mui/material';
+import { Box} from '@mui/material';
 
 export const Achievements = () => {
+
   return (
-    <Box flex={4} p={2}>Achievements</Box>
-  )
+    <Box flex={4} p={2}>
+      
+    </Box>
+  );
 }

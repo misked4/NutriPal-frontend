@@ -20,6 +20,7 @@ import { NewPatient } from './pages/Client/NewPatient';
 import { NewFoodSchedule } from './pages/Food_schedule/NewFoodSchedule';
 import { NewDiet } from './pages/Diet/NewDiet';
 import { NewRecipe } from './pages/Recipe/NewRecipe';
+import './App.css'
 
 function App() {
   const [mode, setMode] = useState("light");
@@ -59,7 +60,7 @@ const { rightbarState } = useSelector(state => state.rightbar);
                       <ThemeProvider theme={theme}>
                         <Box sx={{backgroundColor:theme.palette.tan.main}} >
                           <Navbar/>
-                          <Stack direction="row" spacing={2} justifyContent="space-between" sx ={{display: 'flex',height: "100vh"}}>
+                          <Stack className="myDiv" direction="row" spacing={2} justifyContent="space-between">
                             <Sidebar setMode={setMode} mode={mode}/>
                             <Outlet/>
                             {rightbarState && <Rightbar/>}

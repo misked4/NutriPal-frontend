@@ -10,7 +10,7 @@ const ProtectedRoutes = () => {
     const isAuth = (user != null || isSuccess);
     useEffect(()=>{
         if(isSuccess || user){ //or user who are already logged in
-          console.log("SUCCESS!! :)");
+          //console.log("SUCCESS!! :)");
         }
       }, [user, isSuccess]) //dodaj navigate
     return isAuth ? <Outlet/> : <EntryPage/>

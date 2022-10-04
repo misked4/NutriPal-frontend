@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {getRecipePage} from './APIcomms';
 
 const useRecipes = (pageNum = 1) => {

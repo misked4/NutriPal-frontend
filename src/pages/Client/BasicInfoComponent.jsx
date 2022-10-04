@@ -104,9 +104,21 @@ export const BasicInfoComponent = () => {
     },[validEmail]);
 
     return (
-    <Box>
+    <Box >
       <FormControl variant="standard" sx={{ m: 1.5, mt: 3, width: '40ch' }}>
           <Input
+            sx={{
+                '& .MuiTextField-root': { m: 1, width: '25vw' },
+                '& fieldset': {
+                    borderColor: 'black',
+                },
+                '&:hover fieldset': {
+                    borderColor: 'black',
+                },
+                '&.Mui-focused fieldset': {
+                    borderColor: 'black',
+                },
+            }}
             inputProps={{ maxLength: 30 }}
             value={Ime}
             onChange={handleChange('Ime')}
@@ -180,7 +192,7 @@ export const BasicInfoComponent = () => {
             endAdornment={<InputAdornment position="end">Telefon</InputAdornment>}
           />
         </FormControl>
-        <FormControl>
+        <FormControl sx={{ ml:"25px"}}>
           <FormLabel id="demo-controlled-radio-buttons-group">Gender</FormLabel>
           <RadioGroup
             aria-labelledby="demo-controlled-radio-buttons-group"

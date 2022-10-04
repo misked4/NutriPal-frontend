@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { AppBar, Box, Toolbar, Badge, InputBase, Typography, styled, Avatar, Menu, MenuItem, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import { AppBar, Box, Toolbar, Badge, InputBase, Typography, styled, Avatar, Menu, MenuItem, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
 import EmailIcon from '@mui/icons-material/Email';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -9,6 +9,8 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import LogoutIcon from '@mui/icons-material/Logout';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
+import HomeIcon from '@mui/icons-material/Home';
+import NewspaperIcon from '@mui/icons-material/Newspaper';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import Post from '../pages/Recipe/Post';
@@ -18,7 +20,17 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout, reset } from '../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { returnUnseenLikes, getRecipe, setSeenAllNotifications } from '../pages/Recipe/APIcomms';
+import { Stack } from '@mui/system';
  
+function changeHeightVmax() {
+  document.getElementsByClassName("myDiv")[0].style.height = "100vmax";
+  window.scrollTo(0, 0);
+}
+function changeHeightToPercentage() {
+  document.getElementsByClassName("myDiv")[0].style.height = "100%";
+  window.scrollTo(0, 0);
+}
+
 const Navbar = () => {
   const [openProfileInfo, setOpenProfileInfo] = useState(false);
   const [openNotificationsInfo, setOpenNotificationsInfo] = useState(false);
@@ -71,12 +83,20 @@ const Navbar = () => {
     returnUnseenLikes(user[0].id)
       .then(data=>{
           setNotifications(data);
-          console.log(data);
       })
       .catch(e=>{
-          console.log(e)
+          //console.log(e)
       });
   },[]);
+
+  const navigateToHome = () => {
+    navigate('/');
+    changeHeightVmax();
+  };
+  const navigateToNews = () => {
+    navigate('/news');
+    changeHeightToPercentage();
+  };
 
   const menuItemNotification = notifications.length === 0 ?
     <StyledToolbar>
@@ -86,9 +106,9 @@ const Navbar = () => {
     : notifications.map((notification, i) => {
     return <StyledToolbar key={notification.lajkReceptId}>
               <FavoriteIcon/>
-                <MenuItem key={notification.lajkReceptId} onClick={()=>handleClickOpen(notification.receptId)}>
+                <MenuItem key={notification.lajkReceptId} onClick={()=>handleClickOpen(notification.receptId)} sx={{display:{xs:"block",sm:"flex"}}}>
                   <Typography sx={{fontStyle: 'italic',fontWeight: 'bold'}}>{notification.Ime} {notification.Prezime} </Typography>
-                  {" Vam je lajkovao recept sa nazivom "}
+                  <Typography> &nbsp; {"Vam je lajkovao recept sa nazivom"} &nbsp; </Typography>
                   <Typography sx={{fontStyle: 'italic',fontWeight: 'bold'}}> {notification.Naslov}.</Typography>
                 </MenuItem>
             </StyledToolbar>
@@ -100,23 +120,30 @@ const Navbar = () => {
         <Typography variant="h5" sx={{display:{xs:"none",sm:"block"}}}>
           BuddyNut
         </Typography>
-        <FastfoodIcon sx={{display:{xs:"block",sm:"block"}}}/>
+        <FastfoodIcon sx={{display:{xs:"none",sm:"block"}}}/>
+        <UserBoxForMobile>
+          <HomeIcon onClick={navigateToHome} />
+          <NewspaperIcon onClick={navigateToNews} />
+        </UserBoxForMobile>
         <Search>
           <InputBase placeholder="search..."></InputBase>
         </Search>
-        <Icons>
-          <Badge badgeContent={4} color="error" max={999}>
-            <EmailIcon/>
-          </Badge>
+        <UserBoxForDesktop>
+          
           <Badge badgeContent={unseen && notifications.length} color="error" onClick={e=>setOpenNotificationsInfo(true)} max={999}>
             <NotificationsIcon color="blue"/>
           </Badge>
           <Avatar onClick={e=>setOpenProfileInfo(true)} sx={{width:30, height:30}} src="https://www.google.com/search?q=zena&sxsrf=ALiCzsbTBgTXeDg0H1-DjnIM_CQem4ed8Q:1662043903514&source=lnms&tbm=isch&sa=X&ved=2ahUKEwik9-CD7PP5AhV5RvEDHTLlAdUQ_AUoAXoECAEQAw&biw=1536&bih=754&dpr=1.25#imgrc=FpW_Df_YQhkVWM"/>
           <Typography variant="span">{user[0].Ime} {user[0].Prezime}</Typography>
-        </Icons>
+        </UserBoxForDesktop>
         <UserBoxForMobile>
-          <Avatar onClick={e=>setOpenProfileInfo(true)} sx={{width:30, height:30}} src="https://www.google.com/search?q=zena&sxsrf=ALiCzsbTBgTXeDg0H1-DjnIM_CQem4ed8Q:1662043903514&source=lnms&tbm=isch&sa=X&ved=2ahUKEwik9-CD7PP5AhV5RvEDHTLlAdUQ_AUoAXoECAEQAw&biw=1536&bih=754&dpr=1.25#imgrc=FpW_Df_YQhkVWM"/>
-          <Typography variant="span">{user[0].Ime}</Typography>
+          <Badge badgeContent={unseen && notifications.length} color="error" onClick={e=>setOpenNotificationsInfo(true)} max={999}>
+            <NotificationsIcon color="blue"/>
+          </Badge>
+          <Stack direction="row" spacing={0.5} alignItems="center"> 
+            <Avatar onClick={e=>setOpenProfileInfo(true)} sx={{width:30, height:30}} src="https://www.google.com/search?q=zena&sxsrf=ALiCzsbTBgTXeDg0H1-DjnIM_CQem4ed8Q:1662043903514&source=lnms&tbm=isch&sa=X&ved=2ahUKEwik9-CD7PP5AhV5RvEDHTLlAdUQ_AUoAXoECAEQAw&biw=1536&bih=754&dpr=1.25#imgrc=FpW_Df_YQhkVWM"/>
+            <Typography variant="span">{user[0].Ime}</Typography>
+          </Stack>
         </UserBoxForMobile>
       </StyledToolbar>
       <Menu
@@ -160,12 +187,8 @@ const Navbar = () => {
           onClose={handleClose}
           aria-labelledby="responsive-dialog-title"
         >
-          <DialogTitle id="responsive-dialog-title">
-            {currentOpenedRecipe.Ime+" "+currentOpenedRecipe.Prezime+" Vam je lajkovao sledecu objavu"}
-          </DialogTitle>
-          <DialogContent>
-            <Post post={currentOpenedRecipe}></Post>
-          </DialogContent>
+          <Post post={currentOpenedRecipe}></Post>
+          
           <DialogActions>
             <Button autoFocus onClick={handleClose}>
               Procitao sam
@@ -189,7 +212,7 @@ const Search = styled("div")(({theme}) => ({
   width: "40%"
 }));
 
-const Icons = styled(Box)(({theme}) => ({
+const UserBoxForDesktop = styled(Box)(({theme}) => ({
   backgroundColor: theme.palette.primary.main,
   display: "none",
   alignItems:"center",
@@ -202,7 +225,7 @@ const Icons = styled(Box)(({theme}) => ({
 const UserBoxForMobile = styled(Box)(({theme}) => ({
   display: "flex",
   alignItems:"center",
-  gap: "10px",
+  gap: "20px",
   [theme.breakpoints.up('sm')]: {
     display: "none"
   }
