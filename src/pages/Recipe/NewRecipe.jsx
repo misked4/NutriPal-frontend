@@ -5,6 +5,7 @@ import { Box, Divider, InputAdornment, TextField, Button, Typography } from '@mu
 import { Stack } from '@mui/system';
 import { theme } from './../../theme';
 import { DescriptionAlertError, DescriptionAlertSuccess } from '../../components/DescriptionAlerts';
+import { uploadImage } from './APIcomms';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import axios from "axios";
 
@@ -16,10 +17,12 @@ export const NewRecipe = () => {
         Opis: '',
         Minutaza: 0,
         Broj_porcija: 0,
-        KreatorId: user[0].id
+        KreatorId: user[0].id,
+        Slika: null,
+        Cloudinary_public_id: null
     }
     
-    const [recipeData, setRecipeData] = useState(initialState);
+    const [ recipeData, setRecipeData ] = useState(initialState);
     const { Naslov, Opis, Minutaza, Broj_porcija } = recipeData;
     
     const [ errorState, setErrorState ] = useState(false);
@@ -35,11 +38,9 @@ export const NewRecipe = () => {
     }
 
     const saveRecipe = () => {
-        if(Naslov!==undefined && Opis!=undefined)
+        if(Naslov!==undefined && Opis!=undefined && previewSource)
         {
-            console.log(recipeData);
-            dispatch(addRecipe(recipeData));
-            setErrorState(false);
+            uploadImageFunction(previewSource);
         }
         else
         {
@@ -55,12 +56,49 @@ export const NewRecipe = () => {
             .then((resp) => {
                 console.log("Response from addRecipe: ",resp);
                 setSuccessState(true);
+                setPreviewSource(null);
                 setRecipeData(initialState);
             })
             .catch((error) => console.log(error));
         }
     }
+    // #region fileUpload
+    const [previewSource, setPreviewSource] = useState();
 
+    const handleFileInputChange = (e) => {
+        const file = e.target.files[0];
+        previewFile(file);
+    }
+    
+    const previewFile = (file) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file); //convert image to URL
+        reader.onloadend = () => {
+        setPreviewSource(reader.result);
+        }    
+    }
+    const uploadImageFunction = async(base64EncodedImage) => {
+        const body = JSON.stringify({
+          data: base64EncodedImage
+        });
+        const jsonObj = JSON.parse(body);
+        //dispatch(loading());
+        uploadImage(jsonObj)
+          .then(result=>{            
+                setRecipeData({...recipeData, Cloudinary_public_id: result.public_id, Slika: result.secure_url});
+          })
+          .catch(e=>console.log(e));
+    }
+
+    useEffect(()=>{
+        console.log("EFFECT");
+        if(recipeData.Cloudinary_public_id!==null)
+        {
+            dispatch(addRecipe(recipeData));
+            setErrorState(false);
+        }
+      }, [recipeData.Cloudinary_public_id]) //dodaj navigate
+    // #endregion
     return (
       <Box flex={4} p={2}>
         <Stack direction='row' justifyContent='center' sx={{ backgroundColor: theme.palette.secondary.main, border: "1px solid black"}}>
@@ -143,10 +181,21 @@ export const NewRecipe = () => {
                 </Stack>
             </Stack>
         </Stack>
+        {previewSource && (<Box
+                                  component="img"
+                                  sx={{
+                                    height: "50%",
+                                    width: "50%",
+                                    maxHeight: { xs: 233, md: 167 },
+                                    maxWidth: { xs: 350, md: 250 },
+                                  }}
+                                  src={previewSource}
+                                />)}
+        <input type="file" name="image" onChange={handleFileInputChange}/>    
         <Button sx={{m:1}} variant="contained" onClick={saveRecipe} endIcon={<SaveAltIcon />}>
         Zapamti
         </Button>
-        {errorState && DescriptionAlertError("Morate uneti naziv i opis.")}
+        {errorState && DescriptionAlertError("Morate uneti naziv i opis, kao i sliku.")}
         {successState && DescriptionAlertSuccess("Uspesno ste dodali recept.")}
       </Box>
       

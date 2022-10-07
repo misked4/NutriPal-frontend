@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import PropTypes from 'prop-types';
-import { useTheme, Box, Table, TableBody, TableCell, TableContainer, TableFooter, TablePagination, TableRow, Paper, TableHead, ButtonGroup, Button, TextField } from '@mui/material';
+import { useTheme, Box, Table, TableBody, TableCell, TableContainer, TableFooter, TablePagination, TableRow, Paper, TableHead, ButtonGroup, Button, TextField, Avatar } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
@@ -57,6 +57,7 @@ export const Dashboard = () => {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
+              <StyledTableCell align="center">Slika</StyledTableCell>
               <StyledTableCell align="center">Ime</StyledTableCell>
               <StyledTableCell align="center">Prezime</StyledTableCell>
               <StyledTableCell align="center">Email</StyledTableCell>
@@ -74,6 +75,9 @@ export const Dashboard = () => {
             ).map((row) => (
               <StyledTableRow key={row.id}>
                 <StyledTableCell align="center" component="th" scope="row">
+                  <Avatar sx={{ display: 'flex', ml: "30%"}} src={row.Slika}/>
+                </StyledTableCell>
+                <StyledTableCell align="center">
                   {row.Ime}
                 </StyledTableCell>
                 <StyledTableCell align="center">

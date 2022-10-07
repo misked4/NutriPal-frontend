@@ -3,23 +3,35 @@ import { useState, useEffect } from 'react';
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { register, login, reset } from "../../features/auth/authSlice";
+import { register, login, reset, loading } from "./auth/authSlice";
+import { uploadImage } from "./auth/authService";
 import { Navigate, useNavigate } from 'react-router-dom';
 import { isFulfilled } from '@reduxjs/toolkit';
-import Spinner from '../../components/Spinner';
+import { CircularProgress } from '@mui/material';
+import { Avatar, Box } from '@mui/material';
 
 const EntryPage = () => {
   const [pov, setPov] = useState({currentView: "singUp"});
 
   //#region Register
+  //const [selectedFile, setSelectedFile] = useState('');
+  const [previewSource, setPreviewSource] = useState();
   const [formData, setFormData] = useState({
     Ime: '',
     Prezime: '',
     Email: '',
     Lozinka: '',
-    Lozinka2: ''
+    Lozinka2: '',
+    Datum_rodjenja: '1997-04-16',
+    Uloga: 'Korisnik',
+    Telefon: '062',
+    Slika: '',
+    Dodatne_info_Id: null,
+    Adresa: 'adresa',
+    Pol: 'M',
+    Cloudinary_public_id: null
   });
-  const { Ime, Prezime, Email, Lozinka, Lozinka2 } = formData;
+  const { Ime, Prezime, Email, Lozinka, Lozinka2, Slika, Cloudinary_public_id } = formData;
   
   //const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -37,6 +49,15 @@ const EntryPage = () => {
     }
     dispatch(reset());
   }, [user, isError, isSuccess, message, dispatch]) //dodaj navigate
+
+  useEffect(()=>{
+    if(formData.Cloudinary_public_id!==null)
+    {
+      if(Lozinka !== Lozinka2){
+        toast.error('Passwords do no match')
+      } else dispatch(register(formData));
+    }
+  }, [formData.Cloudinary_public_id]) //dodaj navigate
   
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -48,14 +69,8 @@ const EntryPage = () => {
     e.preventDefault()
     if(pov.currentView==="singUp")
     {
-      if(Lozinka !== Lozinka2){
-        toast.error('Passwords do no match')
-      } else {
-        const userData = {
-          Ime, Prezime, Email, Lozinka
-        };
-        dispatch(register(userData));
-      }
+      if(!previewSource) {toast.error('Niste uneli svoju profilnu sliku'); return;}
+      uploadImageFunction(previewSource);
     }
     if(pov.currentView==="logIn")
     {
@@ -68,6 +83,31 @@ const EntryPage = () => {
     }
   }
 
+  const handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    previewFile(file);
+  }
+
+  const previewFile = (file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file); //convert image to URL
+    reader.onloadend = () => {
+      setPreviewSource(reader.result);
+    }    
+  }
+
+  const uploadImageFunction = async(base64EncodedImage) => {
+    const body = JSON.stringify({
+      data: base64EncodedImage
+    });
+    const jsonObj = JSON.parse(body);
+    dispatch(loading());
+    uploadImage(jsonObj)
+      .then(result=>{
+          setFormData({ ...formData, Cloudinary_public_id: result.public_id, Slika: result.secure_url});
+      })
+      .catch(e=>console.log(e));
+  }
   //#endregion
 
   
@@ -83,9 +123,9 @@ const EntryPage = () => {
     {
         return (
           <form onSubmit={onSubmit} name="registerForm">
-            <h2>Sign Up!</h2>
+            <h2>Dodaj nalog!</h2>
             <fieldset>
-              <legend>Create Account</legend>
+              <legend>Kreitanje naloga</legend>
               <ul>
                 <li>
                   <label htmlFor="name">Ime:</label>
@@ -106,25 +146,37 @@ const EntryPage = () => {
                   <label htmlFor="password">Potvrdite lozinku:</label>
                   <input type="password" id="Lozinka2" name="Lozinka2" value={Lozinka2} placeholder="Potvrdite lozinku:" onChange={onChange} required/>
                 </li>
-              </ul>
+              </ul>{previewSource && (<Box
+                                  component="img"
+                                  sx={{
+                                    height: "50%",
+                                    width: "50%",
+                                    maxHeight: { xs: 233, md: 167 },
+                                    maxWidth: { xs: 350, md: 250 },
+                                    ml: "50%"
+                                  }}
+                                  src={previewSource}
+                                />)}
+              <input type="file" name="image" onChange={handleFileInputChange}/>              
             </fieldset>
-            <button type="submit">Submit</button>
-            <button type="button" onClick={ () => changeView("logIn")}>Have an Account?</button>
+            {isLoading? <Box sx={{ ml:"50%" }}><CircularProgress /></Box> : <button type="submit">Sačuvaj</button>}
+            
+            <button type="button" onClick={ () => changeView("logIn")}>Već imam nalog?</button>
           </form>
         ) //break
     }
     else if(pov.currentView==="logIn"){
       return(<form onSubmit={onSubmit} name="loginForm">
-        <h2>Welcome Back!</h2>
+        <h2>Dobrošli nazad!</h2>
         <fieldset>
-          <legend>Log In</legend>
+          <legend>Uloguj se!</legend>
           <ul>
             <li>
-              <label htmlFor="email">Email:</label>
+              <label htmlFor="email">E-mail:</label>
               <input type="email" id="Email" name="Email" value={Email} placeholder="Unesite vas email" onChange={onChange} required/>
             </li>
             <li>
-              <label htmlFor="password">Password:</label>
+              <label htmlFor="password">Šifra:</label>
               <input type="password" id="Lozinka" name="Lozinka" value={Lozinka} placeholder="Unesite vasu lozinku" onChange={onChange} required/>
             </li>
             <li>
@@ -133,8 +185,8 @@ const EntryPage = () => {
             </li>
           </ul>
         </fieldset>
-        <button type="submit">Login</button>
-        <button type="button" onClick={ () => changeView("signUp")}>Create an Account</button>
+        <button type="submit">Uloguj me</button>
+        <button type="button" onClick={ () => changeView("signUp")}>Kreiraj novi nalog</button>
       </form>)
     }
     else if(pov.currentView==="PWReset"){

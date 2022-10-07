@@ -48,9 +48,10 @@ function App() {
         otherColor:{
             main: "#FDF4E3"
         } //#705446
-    }
-});
-const { rightbarState } = useSelector(state => state.rightbar);
+      }
+    });
+
+  const { rightbarState } = useSelector(state => state.rightbar);
   
   return (
     <BrowserRouter>

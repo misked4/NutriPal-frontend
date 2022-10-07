@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, FormControl, FormHelperText, Input, InputAdornment, InputLabel, Button, Typography, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
-import { addBasicInfo, changePage, checkEmailAction } from '../../redux/newPatient/actions';
+import { addBasicInfo, changePage, checkEmailAction, uploadImage } from '../../redux/newPatient/actions';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import PasswordIcon from '@mui/icons-material/Password';
@@ -26,11 +26,11 @@ export const BasicInfoComponent = () => {
       Adresa: '' || basicInfo.Adresa,
       Slika: '' || basicInfo.Slika,
       Pol: 'M' || basicInfo.Pol,
+      Cloudinary_public_id: null || basicInfo.Cloudinary_public_id,
       Dodatne_info_Id: null || basicInfo.Dodatne_info_Id //ako je potrebno uhvati additionalInfo iz NewPatient
     }
     const [ basicInfoOfPatient, setBasicInfoOfPatient ] = useState(initialStateBasicInfo);
-    const { Ime, Prezime, Email, Lozinka, Lozinka2, Telefon, Adresa, Pol } = basicInfoOfPatient;
-
+    const { Ime, Prezime, Email, Lozinka, Lozinka2, Telefon, Adresa, Slika, Pol, Cloudinary_public_id } = basicInfoOfPatient;
     const [ error, setError ] = useState("");
     const [ dateFromForm, setDateFromForm ] = useState(new Date());
 
@@ -44,11 +44,6 @@ export const BasicInfoComponent = () => {
       const dateString = newDateWithZone.toISOString().split('T')[0];
       setDateFromForm(newDate); //moramo da vratimo ono sto DataPicker prepoznaje, ne moze samo dateString
       setBasicInfoOfPatient({ ...basicInfoOfPatient, Datum_rodjenja: dateString});
-    }
-
-    const handleImage = event => {
-      const fileUploaded = event.target.files[0];
-      console.log(fileUploaded);
     }
 
     const onClickEvent = (e) => {
@@ -68,18 +63,26 @@ export const BasicInfoComponent = () => {
       }
       if(validEmail === false)
       {
-        if(basicInfoOfPatient.Ime && basicInfoOfPatient.Prezime && basicInfoOfPatient.Email && basicInfoOfPatient.Lozinka && 
-          basicInfoOfPatient.Lozinka2 && basicInfoOfPatient.Datum_rodjenja && basicInfoOfPatient.Telefon && basicInfoOfPatient.Adresa)
+        if(!previewSource) {setError("Slika"); return;}
+        if(basicInfoOfPatient.Cloudinary_public_id)
         {
-          if(basicInfoOfPatient.Lozinka === basicInfoOfPatient.Lozinka2)
-          {
-            setError("");
-            console.log("USPESNO");
-            dispatch(addBasicInfo(basicInfoOfPatient));
-            dispatch(changePage("2"));
-          }
-          else setError("Lozinka");
+          addBasicInfoFunction();
         }
+        else{uploadImageFunction(previewSource);}
+      }
+    }
+
+    const addBasicInfoFunction = () => {
+      if(basicInfoOfPatient.Ime && basicInfoOfPatient.Prezime && basicInfoOfPatient.Email && basicInfoOfPatient.Lozinka && 
+        basicInfoOfPatient.Lozinka2 && basicInfoOfPatient.Datum_rodjenja && basicInfoOfPatient.Telefon && basicInfoOfPatient.Adresa && basicInfoOfPatient.Slika)
+      {
+        if(basicInfoOfPatient.Lozinka === basicInfoOfPatient.Lozinka2)
+        {
+          setError("");
+          dispatch(addBasicInfo(basicInfoOfPatient));
+          dispatch(changePage("2"));
+        }
+        else setError("Lozinka");
       }
     }
 
@@ -102,6 +105,45 @@ export const BasicInfoComponent = () => {
         }
       }
     },[validEmail]);
+
+    // #region uploadFile
+    const [previewSource, setPreviewSource] = useState();
+
+    const handleFileInputChange = (e) => {
+      const file = e.target.files[0];
+      previewFile(file);
+    }
+
+    const previewFile = (file) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file); //convert image to URL
+      reader.onloadend = () => {
+        setPreviewSource(reader.result);
+      }    
+    }
+
+    const uploadImageFunction = async(base64EncodedImage) => {
+      const body = JSON.stringify({
+        data: base64EncodedImage
+      });
+      const jsonObj = JSON.parse(body);
+      dispatch(uploadImage(jsonObj));
+      //console.log(basicInfo);
+
+    }
+
+    useEffect(()=>{
+      console.log("EFECT ZA CLOUD");
+      if(basicInfo.Cloudinary_public_id && !basicInfoOfPatient.Cloudinary_public_id)
+      {
+        setBasicInfoOfPatient({ ...basicInfoOfPatient, Cloudinary_public_id: basicInfo.Cloudinary_public_id, Slika: basicInfo.Slika });
+      }
+      if(basicInfoOfPatient.Cloudinary_public_id)
+      {
+        addBasicInfoFunction();
+      }      
+    }, [basicInfo.Cloudinary_public_id, basicInfoOfPatient.Cloudinary_public_id])
+    // #endregion
 
     return (
     <Box >
@@ -226,7 +268,16 @@ export const BasicInfoComponent = () => {
                               }} value={dateFromForm} sx={{ m: 1.5, mt: 3, width: '50ch' }}/>
         </Typography>
 
-
+        {previewSource && (<Box
+                                  component="img"
+                                  sx={{
+                                    height: "50%",
+                                    width: "50%",
+                                    maxHeight: { xs: 350, md: 350 },
+                                    maxWidth: { xs: 250, md: 250 },
+                                  }}
+                                  src={previewSource}
+                                />)}
         <Button sx={{ m: 1.5, mt: 3 }} onClick={onClickEvent}>Zapamti</Button>
         <Button
           variant="contained"
@@ -234,10 +285,12 @@ export const BasicInfoComponent = () => {
           sx={{ m: 1.5, mt: 3 }}
         >
           Upload File
-          <input hidden accept="image/*" type="file" onChange={handleImage}/>
+          <input hidden type="file" name="image"  onChange={handleFileInputChange}/>
         </Button>
+        
         {error && error==="Email" && DescriptionAlertError("Email koji ste uneli je vec zauzet.")}
         {error && error==="Lozinka" && DescriptionAlertError("Lozinke se ne poklapaju.")}
+        {error && error==="Slika" && DescriptionAlertError("Morate uneti sliku.")}
     </Box>
   )
 }

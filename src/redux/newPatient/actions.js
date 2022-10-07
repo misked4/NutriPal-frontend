@@ -24,6 +24,10 @@ const getActivities = (allActivities) => ({
 const doneCreatingNewPatient = () => ({
     type: types.DONE_ADDING_NEW_PATIENT
 })
+const addPublicIdAndSecureUrl = (informations) => ({
+    type: types.IMAGE_UPLOAD,
+    payload: informations
+})
 
 
 export const addBasicInfo = (basicInformations) => {
@@ -98,5 +102,20 @@ export const registerUser = (creatorId, userInfo) => {
             dispatch(doneCreatingNewPatient());
         })
         .catch((error) => console.log(error));
+    }
+}
+
+export const uploadImage = (base64EncodedImage) => {
+    return function (dispatch) {
+        axios.post(`${process.env.REACT_APP_API}/images/upload`, base64EncodedImage)
+            .then((resp) => {
+                const info = {
+                    public_id: resp.data.public_id,
+                    secure_url: resp.data.secure_url
+                }
+                console.log(info);
+                dispatch(addPublicIdAndSecureUrl(info));
+            })
+            .catch((error) => console.log(error));
     }
 }

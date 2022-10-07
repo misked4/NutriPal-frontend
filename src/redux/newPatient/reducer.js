@@ -45,6 +45,12 @@ const newPatientReducers = (state = initialState, action) => {
         return{
             ...initialState
         }
+        case types.IMAGE_UPLOAD:
+            return{
+                ...state,
+                basicInfo: { ...state.basicInfo, Cloudinary_public_id: action.payload.public_id, Slika: action.payload.secure_url},
+                loading: false
+            }
         default:
             return state;
     }

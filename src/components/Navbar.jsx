@@ -17,7 +17,7 @@ import Post from '../pages/Recipe/Post';
 //---ovo je za pribavljanje informacija iz state
 
 import { useSelector, useDispatch } from 'react-redux';
-import { logout, reset } from '../features/auth/authSlice';
+import { logout, reset } from '../pages/Entry/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { returnUnseenLikes, getRecipe, setSeenAllNotifications } from '../pages/Recipe/APIcomms';
 import { Stack } from '@mui/system';
@@ -133,7 +133,7 @@ const Navbar = () => {
           <Badge badgeContent={unseen && notifications.length} color="error" onClick={e=>setOpenNotificationsInfo(true)} max={999}>
             <NotificationsIcon color="blue"/>
           </Badge>
-          <Avatar onClick={e=>setOpenProfileInfo(true)} sx={{width:30, height:30}} src="https://www.google.com/search?q=zena&sxsrf=ALiCzsbTBgTXeDg0H1-DjnIM_CQem4ed8Q:1662043903514&source=lnms&tbm=isch&sa=X&ved=2ahUKEwik9-CD7PP5AhV5RvEDHTLlAdUQ_AUoAXoECAEQAw&biw=1536&bih=754&dpr=1.25#imgrc=FpW_Df_YQhkVWM"/>
+          <Avatar onClick={e=>setOpenProfileInfo(true)} sx={{width:40, height:40}} src={user[0].Slika}/>
           <Typography variant="span">{user[0].Ime} {user[0].Prezime}</Typography>
         </UserBoxForDesktop>
         <UserBoxForMobile>
@@ -141,7 +141,7 @@ const Navbar = () => {
             <NotificationsIcon color="blue"/>
           </Badge>
           <Stack direction="row" spacing={0.5} alignItems="center"> 
-            <Avatar onClick={e=>setOpenProfileInfo(true)} sx={{width:30, height:30}} src="https://www.google.com/search?q=zena&sxsrf=ALiCzsbTBgTXeDg0H1-DjnIM_CQem4ed8Q:1662043903514&source=lnms&tbm=isch&sa=X&ved=2ahUKEwik9-CD7PP5AhV5RvEDHTLlAdUQ_AUoAXoECAEQAw&biw=1536&bih=754&dpr=1.25#imgrc=FpW_Df_YQhkVWM"/>
+            <Avatar onClick={e=>setOpenProfileInfo(true)} sx={{width:40, height:40}} src={user[0].Slika}/>
             <Typography variant="span">{user[0].Ime}</Typography>
           </Stack>
         </UserBoxForMobile>

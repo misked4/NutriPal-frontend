@@ -1,46 +1,58 @@
 import React from 'react';
 import { AvatarGroup, Box, Typography, Avatar, Divider, ImageList, ImageListItem } from '@mui/material';
 import { theme } from "../theme";
+import { useEffect, useState } from 'react';
+import { getRecipePage } from '../pages/Recipe/APIcomms';
+import './Rightbar.css'
 
 export const Rightbar = () => {
+  const [ recipes, setRecipes ] = useState([]);
+  const [ error, setError ] = useState(false);
+
+  useEffect(()=>{
+    getRecipePage(1)
+      .then(data => {
+        setRecipes(data)
+      })
+      .catch(e=>{
+          setError(true)
+    })
+  },[]);
+
   return (
-    <Box bgcolor={theme.palette.cream.main} flex={1.5} p={2} width={300} sx={{display:{xs:"none", sm: "block"}, heigth:"100vmax"}}>
+    <Box id='swingRight' className='slide-in-right' bgcolor={theme.palette.cream.main} flex={1.5} p={2} sx={{display:{xs:"none", sm: "block"}, heigth:"100vmax"}}>
       <Box position="fixed">
-        <Typography variant="h5" fontWeight={100}>Online friends</Typography>
+        <Typography variant="h5" fontWeight={100}>Oni koji su dodali recepte</Typography>
         <AvatarGroup max={7}>
-          <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-          <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
-          <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
-          <Avatar alt="Agnes Walker" src="/static/images/avatar/4.jpg" />
-          <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
-          <Avatar alt="Agnes Walker" src="/static/images/avatar/4.jpg" />
-          <Avatar alt="Trevor Henderson" src="/static/images/avatar/5.jpg" />
+          {
+            recipes.map(recipe=>(
+              <Avatar src={recipe.KorisnikSlika} />
+            ))
+          }
         </AvatarGroup>
-        <Divider />
-        <Typography variant="h5" fontWeight={100}>Latest posts</Typography>
+        <Divider sx={{m:2}}/>
+        <Typography variant="h5" fontWeight={100}>Zadnji dodati recepti</Typography>
         <ImageList
-          sx={{ width: 500, height: 450 }}
+          sx={{ width: "100%", height: "100%" }}
           variant="quilted"
           cols={4}
           rowHeight={121}
         >
-          {itemData.map((item) => (
-            <ImageListItem key={item.img} cols={item.cols || 1} rows={item.rows || 1}>
+          {recipes.slice(0,-2).map((item, i) => (
+            <ImageListItem key={i} cols={i%5==0 || i==3 || i==4? 2 : 1} rows={i%5==0? 2 : 1}>
               <img
-                {...srcset(item.img, 121, item.rows, item.cols)}
-                alt={item.title}
+                {...srcset(item.ReceptSlika, 121, item.rows, item.cols)}
                 loading="lazy"
               />
             </ImageListItem>
           ))}
         </ImageList>
-        <Divider />
-        <Typography variant="h5" fontWeight={100}>Latest Conversations</Typography>
+        <Divider sx={{m:2}} />
       </Box>
     </Box>
   )
 }
-
+//<Typography variant="h5" fontWeight={100}>Latest Conversations</Typography> //ispod Divider
 function srcset(image, size, rows = 1, cols = 1) {
   return {
     src: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format`,
@@ -110,24 +122,5 @@ const itemData = [
   {
     img: 'https://images.unsplash.com/photo-1518756131217-31eb79b20e8f',
     title: 'Fern',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1597645587822-e99fa5d45d25',
-    title: 'Mushrooms',
-    rows: 2,
-    cols: 2,
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1567306301408-9b74779a11af',
-    title: 'Tomato basil',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1471357674240-e1a485acb3e1',
-    title: 'Sea star',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1589118949245-7d38baf380d6',
-    title: 'Bike',
-    cols: 2,
-  },
+  }
 ];

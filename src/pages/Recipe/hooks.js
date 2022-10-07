@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import {getRecipePage} from './APIcomms';
+import { getRecipePage } from './APIcomms';
 
 const useRecipes = (pageNum = 1) => {
     const [results, setResults] = useState([]);

@@ -17,10 +17,16 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { hideRightBar, unhiddenRightBar } from './../redux/rightbar/actions';
 
-function changeHeight() {
+function changeHeightVmax() {
   document.getElementsByClassName("myDiv")[0].style.height = "100vmax";
   window.scrollTo(0, 0);
 }
+
+function changeHeightToPercentage() {
+  document.getElementsByClassName("myDiv")[0].style.height = "100%";
+  window.scrollTo(0, 0);
+}
+
 
 const Sidebar = ({setMode, mode}) => {
   let dispatch = useDispatch();
@@ -33,55 +39,67 @@ const Sidebar = ({setMode, mode}) => {
     setHidden(!hidden);
   };
 
+  
+  const closeRightbar = () => {
+    setTimeout(function(){
+      dispatch(hideRightBar());
+    }, 1200);
+    var element = document.getElementById("swingRight");
+    if (element.classList.contains('slide-in-right')) {
+      element.classList.remove('slide-in-right');      
+      element.classList.add('slide-out-right');
+    }
+  }
+
   // #region navigate
   const navigateToHome = () => {
     navigate('/');
     dispatch(unhiddenRightBar());
-    changeHeight();
+    changeHeightVmax();
   };
   const navigateToDashboard = () => {
     navigate('/dashboard');
-    dispatch(hideRightBar());
-    changeHeight();
+    closeRightbar();
+    changeHeightVmax();
   };
   const navigateToNews = () => {
     navigate('/news');
     dispatch(unhiddenRightBar());
-    changeHeight();
+    changeHeightToPercentage();
   };
   const navigateToAddingPatient = () => {
     changeHidden();
     navigate('/newpatient');
     dispatch(unhiddenRightBar());
-    changeHeight();
+    changeHeightVmax();
   };
   const navigateToAddingRecipe = () => {
     changeHidden();
     navigate('/newrecipe');
     dispatch(unhiddenRightBar());
-    changeHeight();
+    changeHeightVmax();
   };
   const navigateToAddingFoodSchedule = () => {
     changeHidden();
     navigate('/newfoodschedule');
-    dispatch(hideRightBar());
-    changeHeight();
+    closeRightbar();
+    changeHeightVmax();
   };
   const navigateToAddingDiet = () => {
     changeHidden();
     navigate('/newdiet');
     dispatch(unhiddenRightBar());
-    changeHeight();
+    changeHeightVmax();
   };
   const navigateToAchievements = () => {
     navigate('/achievements');
-    dispatch(hideRightBar());
-    changeHeight();
+    closeRightbar();
+    changeHeightVmax();
   };
   const navigateToSettings = () => {
     navigate('/settings');
     dispatch(unhiddenRightBar());
-    changeHeight();
+    changeHeightVmax();
   };
   // #endregion
   return (
