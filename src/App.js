@@ -52,7 +52,8 @@ function App() {
     });
 
   const { rightbarState } = useSelector(state => state.rightbar);
-  
+  const { user } = useSelector((state) => state.auth);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -76,7 +77,7 @@ function App() {
 
               <Route path={"/newpatient"} element={<NewPatient/>}/>
               <Route path={"/newrecipe"} element={<NewRecipe/>}/>
-              <Route path={"/newfoodschedule"} element={<NewFoodSchedule/>}/>
+              <Route path={"/newfoodschedule"} element={<NewFoodSchedule personOnADietPlan={user[0]} />}/>
               <Route path={"/newdiet"} element={<NewDiet/>}/>
 
               <Route path={"/achievements"} element={<Achievements/>}/>

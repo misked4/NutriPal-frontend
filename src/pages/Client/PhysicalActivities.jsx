@@ -21,6 +21,7 @@ export const PhysicalActivities = () => {
         KreatorId: user[0].id,
         Visina: additionalInfo.Visina,
         Tezina: additionalInfo.Tezina,
+        Cilj_ishrane: additionalInfo.Cilj_ishrane,
         PotrosnjaKalorija: '25' || additionalInfo.PotrosnjaKalorija
         }
     const [ additionalInfoPatient, setAdditionalInfoPatient ] = useState(initialStateAddInfo);
@@ -56,12 +57,10 @@ export const PhysicalActivities = () => {
 
     const handleChange = (prop) => (event) => {
         setAdditionalInfoPatient({ ...additionalInfoPatient, [prop]: event.target.value });
-        console.log(PotrosnjaKalorija);
     };
 
     const Save = (e) => {
       e.preventDefault();
-      console.log(PotrosnjaKalorija);
       if(PotrosnjaKalorija !== ''){
         dispatch(addAdditionalInfo(additionalInfoPatient));
         dispatch(addPatientAction(user[0].id, additionalInfoPatient, basicInfo)); //ova funckija ide na kraju
@@ -106,7 +105,7 @@ export const PhysicalActivities = () => {
     const calculate = () => {
       const factor = selectedActivity.Faktor;
       const sumMinutes = Number(time.Hours) * 60 + Number(time.Minutes);
-      const oneCalculateKcal = factor * sumMinutes;
+      const oneCalculateKcal = Math.round(factor * sumMinutes);
       setKcal(kcal + oneCalculateKcal);
       setAdditionalInfoPatient({ ...additionalInfoPatient, PotrosnjaKalorija: (kcal + oneCalculateKcal) });
       const item = {

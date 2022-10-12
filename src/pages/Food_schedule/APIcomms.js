@@ -1,14 +1,11 @@
 import axios from 'axios'
 
-export const getAllGroceries = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_API}/groceries`);
-    //console.log("getAllGroceries");
+export const getAllRecipesForNutri = async (userId) => {
+    const response = await axios.get(`${process.env.REACT_APP_API}/recipes/${userId}`);
     return response.data;
 }
 
-export const getGroceriesByName = async (name) => {
-    const response = await axios.get(`${process.env.REACT_APP_API}/groceries/${name}`);
-    //console.log("getGroceriesByName");
-    //console.log(response.data);
+export const getRecipeWithHisGroceries = async (recipeId) => {
+    const response = await axios.get(`${process.env.REACT_APP_API}/fullrecipe/${recipeId}`);
     return response.data;
 }

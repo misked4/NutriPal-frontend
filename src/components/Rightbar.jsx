@@ -26,7 +26,7 @@ export const Rightbar = () => {
         <AvatarGroup max={7}>
           {
             recipes.map(recipe=>(
-              <Avatar src={recipe.KorisnikSlika} />
+              <Avatar src={recipe.KorisnikSlika} key={recipe.id} />
             ))
           }
         </AvatarGroup>

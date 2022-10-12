@@ -1,29 +1,43 @@
 import React, { useState, useEffect } from 'react'
-import { Box, Typography, Button, Grid, List, ListItem, ListItemIcon, Checkbox, Paper, ListItemText, Autocomplete, TextField, IconButton, ListItemButton, Stack } from '@mui/material';
-import { getAllGroceries, getGroceriesByName } from './APIcomms';
-import SettingsIcon from '@mui/icons-material/Settings';
-import InfoIcon from '@mui/icons-material/Info';
+import { useDispatch, useSelector } from 'react-redux';
+import { Box, Typography, Button, InputLabel, MenuItem, Select, FormHelperText, FormControl, TextField, 
+  Card, CardMedia, CardContent, CardActions, IconButton, Input, InputAdornment, Chip, Avatar } from '@mui/material';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import { Stack } from '@mui/system';
+import NextPlanIcon from '@mui/icons-material/NextPlan';
+import { getAllRecipesForNutri, getRecipeWithHisGroceries } from './APIcomms';
+import Autocomplete from '@mui/material/Autocomplete';
 import './NewFoodSchedule.css'
-//OPASNOST: ako klijent ubaci namirnicu,a drugi klijent pokusa da je ubaci u nedeljni plan ishrane
+
 const n = 7;
 const m = 8;
-export const NewFoodSchedule = () => {
+export const NewFoodSchedule = ({ personOnADietPlan }) => {
+  const { user } = useSelector((state) => state.auth);
+
   const [matrix, setMatrix] = useState(Array.from({length: n},()=> Array.from({length: m}, () => null)));
   const [indexOfRow, setIndexOfRow] = useState(-1);
   const [indexOfColumn, setIndexOfColumn] = useState(-1);
-  const [groceries, setGroceries] = useState([]);
   const [hiddenForm, setHiddenForm] = useState(true);
+  const [pageRecipe, setPageRecipe] = useState(1);  
+  const [goal, setGoal] = useState("Smanjenje telesne mase");
+  const [recipes, setRecipes] = useState();
+  const [chosenRecipe, setChosenRecipe] = useState(null);
+  const [groceriesForChosenRecipe, setGroceriesForChosenRecipe] = useState([]);
+  const [numberOfServings, setNumberOfServings] = useState(1);
 
   function AfterSlideIn() {
+    setTimeout(function(){
+      setHiddenForm(true);
+      setChosenRecipe(null);
+    }, 1200);
     var element = document.getElementById("swingBox");
-    console.log(element.className);
     
     if (element.classList.contains('swing-in-top-fwd')) {
       element.classList.remove('swing-in-top-fwd');      
       element.classList.add('swing-out-top-bck');
     }
-    console.log(element.className);
   }
+
   useEffect(()=>{
     let copy = [...matrix];
     copy[0][0] = "";
@@ -41,61 +55,14 @@ export const NewFoodSchedule = () => {
     copy[5][0] = "Vecera";
     copy[6][0] = "Obrok posle vecere";
     setMatrix(copy);
-    getAllGroceries()
-      .then(data=>{
-        setGroceries(data.map(oneGrocery=>{
-          let currentGrocery = {id : oneGrocery.id, Naziv: oneGrocery.Naziv, Kolicina: 1 };
-          return currentGrocery; 
-        }));
-        var startIndex = 0;
-        var endIndex = 5;
-        setLeft(data.slice([startIndex], [endIndex]).map(oneGrocery=>{
-          let currentGrocery = {id : oneGrocery.id, Naziv: oneGrocery.Naziv, Kolicina: 1 };
-          return currentGrocery; 
-        }));
-      })
-      .catch(e=>console.log(e));
+    
+    //console.log("personOnADietPlan");
+    //console.log(personOnADietPlan);
+    getAllRecipesForNutri(user[0].id)
+          .then(result=>setRecipes(result))
+          .catch(e=>console.log(e));
+    // dodati ovde citanje iz baze za svakoga za svaki cilj
   },[]);
-
-  const changeInput = (e) => {
-    if(!e.target.value)
-    {      
-      var startIndex = 0;
-      var endIndex = 10;
-      setLeft(groceries.slice([startIndex], [endIndex]).map(oneGrocery=>{
-        let currentGrocery = {id : oneGrocery.id, Naziv: oneGrocery.Naziv, Kolicina: 1 };
-        return currentGrocery; 
-      }));
-    }
-    else
-    {
-      getGroceriesByName(e.target.value)
-        .then(data=>{
-          setLeft(data.map(oneGrocery=>{
-            let currentGrocery = {id : oneGrocery.id, Naziv: oneGrocery.Naziv, Kolicina: 1 };
-            return currentGrocery; 
-          }));
-        })
-        .catch(e=>console.log(e));
-    }
-  }
-
-  const setAllArraysToInitialValues = () => {
-    setChecked([]);
-    setRight([]);
-    var startIndex = 0;
-    var endIndex = 10;
-    setLeft(groceries.slice([startIndex], [endIndex]).map(oneGrocery=>{
-      let currentGrocery = {id : oneGrocery.id, Naziv: oneGrocery.Naziv, Kolicina: 1 };
-      return currentGrocery; 
-    }));
-  }
-
-  const handleChange = (rowIndex, columnIndex, event) => {
-    let copy = [...matrix];
-    copy[rowIndex][columnIndex] = +event.target.value;
-    setMatrix(copy);
-  };
 
   const returnToNull = (rowIndex, columnIndex) => {
     let copy = [...matrix];
@@ -107,169 +74,98 @@ export const NewFoodSchedule = () => {
   const setIndexes = (rowIndex, columnIndex) => {
     setIndexOfRow(rowIndex);
     setIndexOfColumn(columnIndex);
-    if(matrix[rowIndex][columnIndex]!=null) //ako vec imamo definisane namirnice za ovaj obrok
-    {
-      setRight(matrix[rowIndex][columnIndex]);
-      const leftRight = intersection(left, right);
-      setLeft(not(left, leftRight));
-    }
-    else 
-      setAllArraysToInitialValues();
+    setHiddenForm(false);
+    setChosenRecipe(null);
+  }
+
+  const updateMatrixField = (rowIndex, columnIndex) => {
+    const recipeIdFromMatrix = matrix[rowIndex][columnIndex].chosenRecipe;
+    const recipeForUpdate = recipes.find(x => x.id === recipeIdFromMatrix);
+    const getNumberOfServings = matrix[rowIndex][columnIndex].numberOfServings; 
+    setNumberOfServings(getNumberOfServings);
+    setChosenRecipe(recipeForUpdate);
+    setIndexOfRow(rowIndex);
+    setIndexOfColumn(columnIndex);
     setHiddenForm(false);
   }
-  const save = () => {    
+
+  const saveARecipeForASpecificMeal = () => {
+    setFieldInMatrix(indexOfRow, indexOfColumn);
     AfterSlideIn();
-    if(indexOfRow>0 && indexOfColumn>0 && indexOfRow <= n && indexOfColumn <= m)
-    {
-      let copy = [...matrix];
-      copy[indexOfRow][indexOfColumn] = right;
-      setMatrix(copy);
-      console.log(matrix);
-      setTimeout(function(){
-        setHiddenForm(true);
-      }, 1200);
-      setIndexOfRow(-1);
-      setIndexOfColumn(-1);
-      
-      const btn = document.getElementById(indexOfRow*10 + indexOfColumn);
-      btn.textContent = 'IZMENI';
-    }
-    else{
-      console.log("pogresni indexi");
-      console.log("indexOfRow");
-      console.log(indexOfRow);
-      console.log("indexOfColumn");
-      console.log(indexOfColumn);
-    }
+    setNumberOfServings(1);
   }
 
-  // #region bootstrap
-  const [checked, setChecked] = useState([]);
-  const [left, setLeft] = useState([]);
-  const [right, setRight] = useState([]);
-
-  var leftChecked = intersection(checked, left);
-  var rightChecked = intersection(checked, right);
-
-  const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setChecked(newChecked);
-  };
-
-  const handleAllRight = () => {
-    if(right.length!=0)
+  const setFieldInMatrix = (rowIndex, columnIndex) => {
+    var copy = [...matrix];
+    if(chosenRecipe != null)
     {
-      for(var i = 0;i < left.length; i++){
-        for(var j = 0;j < right.length; j++){
-          if(JSON.stringify(left[i]) === JSON.stringify(right[j])){
-            right.splice(j, 1);
-          }
-        }
+      let recipeIdAndNumberOfServings = {
+        chosenRecipe: chosenRecipe.id,
+        numberOfServings: numberOfServings
       }
+      copy[rowIndex][columnIndex] = recipeIdAndNumberOfServings;
     }
-    setRight(right.concat(left));
-    setLeft([]);
+    else {
+      copy[rowIndex][columnIndex] = null;
+    }
+    setMatrix(copy);
+    console.log(matrix);
   };
 
-  const handleCheckedRight = () => {
-    if(right.length!=0)
+  const autocompleteOnChange = (newChosenName) => {
+    if(newChosenName != null)
     {
-      for(var i = 0;i < leftChecked.length; i++){
-        for(var j = 0;j < right.length; j++){
-          console.log(leftChecked[i]);
-          console.log(right[j]);
-          if(JSON.stringify(leftChecked[i]) === JSON.stringify(right[j])){
-            right.splice(j, 1);
-          }
-        }
-      }
+      var newChosenRecipe = recipes.find(x => x.Naslov === newChosenName);
+      setChosenRecipe(newChosenRecipe);
+      setNumberOfServings(newChosenRecipe.Broj_porcija);
+      getRecipeWithHisGroceries(newChosenRecipe.id)
+            .then(result=>setGroceriesForChosenRecipe(result))
+            .catch(e=>console.log(e));
     }
-    setRight(right.concat(leftChecked));
-    setLeft(not(left, leftChecked));
-    setChecked(not(checked, leftChecked));
+    else setChosenRecipe(null);
+  }
+
+  // #region goal
+  const onClickNext = () => {
+    setPageRecipe(pageRecipe+1);
   };
-
-  const handleCheckedLeft = () => {
-    //setLeft(left.concat(rightChecked));
-    setRight(not(right, rightChecked));
-    setChecked(not(checked, rightChecked));
+  const handleChangeGoal = (event) => {
+      setGoal(event.target.value);
   };
-
-  const handleAllLeft = () => {
-    //setLeft(left.concat(right));
-    setRight([]);
-    setChecked(not(checked, rightChecked)); //moja linija
-  };
-
-  const customList = (items, side) => (
-    <Box>
-    <Paper sx={{ width: 200, height: 230, overflow: 'auto' }}>
-      <List dense component="div" role="list">
-      {items.map((value) => {
-          const labelId = `transfer-list-item-${value.id}-label`;
-
-          return (
-            <ListItem
-              key={value.id}
-              secondaryAction={
-                <IconButton edge="end" aria-label="comments">
-                  {side==="left"? <InfoIcon /> : <SettingsIcon/>}
-                </IconButton>
-              }
-              disablePadding
-            >
-                <ListItemButton role="listitem" button onClick={handleToggle(value)}>
-                  <ListItemIcon>
-                    <Checkbox
-                      edge="start"
-                      checked={checked.indexOf(value) !== -1}
-                      tabIndex={-1}
-                      disableRipple
-                      inputProps={{
-                        'aria-labelledby': labelId,
-                      }}
-                    />
-                  </ListItemIcon>
-                <ListItemText id={labelId} primary={value.Naziv} />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
-        <ListItem />
-      </List>
-    </Paper>
-    <Autocomplete spacing={2} sx={{ m: 2, width: 200,position: "center" }}
-                freeSolo
-                id="free-solo-2-demo"
-                disableClearable
-                options={items.map((option) => option.Naziv)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Pretazite po Nazivu..."
-                    InputProps={{
-                      ...params.InputProps,
-                      type: 'search',
-                    }}
-                    onChange={changeInput}
-                  />
-                )}
-              />
-    </Box>
-  );
+  const generateLabelName = (grocery) => {
+    var name = "";
+    if(grocery.Naziv.length >= 40)
+        name = grocery.Naziv.slice(0, 40) + "...";
+    else name = grocery.Naziv.slice(0, 40) + " - ";
+    return name + "[" + grocery.Kolicina*100 + "gr" + "]";
+}
   // #endregion
 
   return (
     <Box flex={4} p={2}>
-      <div className="sheet">
+      {pageRecipe===1 && <Box sx={{m:5}}><Stack direction="row" spacing={2}>
+            <Typography sx={{mt: 2, mr: 2}}>Izaberite cilj ishrane:</Typography>
+            <FormControl required sx={{ m: 1, minWidth: 120 }}>
+                <InputLabel id="demo-simple-select-required-label">Cilj</InputLabel>
+                <Select
+                labelId="demo-simple-select-required-label"
+                id="demo-simple-select-required"
+                value={goal}
+                label="Cilj *"
+                onChange={handleChangeGoal}
+                >
+                    <MenuItem value={"Smanjenje telesne mase"}>Smanjenje telesne mase</MenuItem>
+                    <MenuItem value={"Zadržavanje telesne mase"}>Zadržavanje telesne mase</MenuItem>
+                    <MenuItem value={"Povecanje telesne mase"}>Povecanje telesne mase</MenuItem>
+                </Select>
+                <FormHelperText>Required</FormHelperText>
+            </FormControl>
+            </Stack>            
+            <Button onClick={onClickNext} variant="contained" endIcon={<NextPlanIcon />} sx={{width: "15%", height: "25%",ml:27,mt:5 }}>
+                Dalje
+            </Button>
+            </Box>}
+        {pageRecipe===2 && <Box><div className="sheet">
         <table className="tableSchedule">
           <tbody>
             {matrix.map((row, rowIndex) => (
@@ -285,21 +181,28 @@ export const NewFoodSchedule = () => {
               </tr> :
               <tr className="tableEl" key={rowIndex}>
                 {row.map((column, columnIndex) => (
-                  rowIndex===1 && columnIndex===0? <td className="tableEl"><Typography align="center">Dorucak</Typography></td> :
-                  rowIndex===2 && columnIndex===0? <td className="tableEl"><Typography align="center">Jutarnja uzina</Typography></td> :
-                  rowIndex===3 && columnIndex===0? <td className="tableEl"><Typography align="center">Rucak</Typography></td> :
-                  rowIndex===4 && columnIndex===0? <td className="tableEl"><Typography align="center">Popodnevna uzina</Typography></td> :
-                  rowIndex===5 && columnIndex===0? <td className="tableEl"><Typography align="center">Vecera</Typography></td> :
-                  rowIndex===6 && columnIndex===0? <td className="tableEl"><Typography align="center">Obrok pred spavanje</Typography></td> :
-                  <td className="tableEl" key={columnIndex}>
-                    <Button
+                  rowIndex===1 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">Dorucak</Typography></td> :
+                  rowIndex===2 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">Jutarnja uzina</Typography></td> :
+                  rowIndex===3 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">Rucak</Typography></td> :
+                  rowIndex===4 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">Popodnevna uzina</Typography></td> :
+                  rowIndex===5 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">Vecera</Typography></td> :
+                  rowIndex===6 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">Obrok pred spavanje</Typography></td> :
+                  <td className="tableEl" key={rowIndex*10 + columnIndex}>
+                    {matrix[rowIndex][columnIndex]? <Button
+                    variant="contained"
+                    component="label"
+                    sx={{width: "100%"}}
+                    className="buttonWithoutRadius"
+                    id={rowIndex*10 + columnIndex}
+                    onClick={()=>updateMatrixField(rowIndex, columnIndex)}         
+                  >&nbsp;IZMENI&nbsp;</Button> : <Button
                       variant="contained"
                       component="label"
                       sx={{width: "100%"}}
                       className="buttonWithoutRadius"   
                       id={rowIndex*10 + columnIndex}
                       onClick={()=>setIndexes(rowIndex, columnIndex)}                   
-                    >&nbsp;DODAJ&nbsp;</Button>
+                    >&nbsp;DODAJ&nbsp;</Button>}
                   </td>
                 ))}
               </tr>
@@ -307,69 +210,60 @@ export const NewFoodSchedule = () => {
           </tbody>
         </table>
       </div>
-      {hiddenForm && <Button sx={{mt: 3, ml:"78%"}} variant="contained" component="label" className='swing-in-top-fwd'>POTVRDI CEO NEDELJNI JELOVNIK</Button>}
-      {!hiddenForm && 
-      <Stack direction="column" spacing={2} id='swingBox' className='swing-in-top-fwd' display="flex" justifyContent="center" alignItems="center">
-        <Grid container spacing={4} justifyContent="center" alignItems="center">
-          <Grid item>{customList(left, "left")}</Grid>
-          <Grid item>
-            <Grid container direction="column" alignItems="center">
-              <Button
-                sx={{ my: 0.5 }}
-                variant="outlined"
-                size="small"
-                onClick={handleAllRight}
-                disabled={left.length === 0}
-              >
-                <Typography color={left.length===0?"none":"black"}> &gt;&gt; </Typography>
-              </Button>
-              <Button
-                sx={{ my: 0.5 }}
-                variant="outlined"
-                size="small"
-                onClick={handleCheckedRight}
-                disabled={leftChecked.length === 0}
-              >                
-                <Typography color={leftChecked.length===0?"none":"black"}> &gt; </Typography>
-              </Button>
-              <Button
-                sx={{ my: 0.5 }}
-                variant="outlined"
-                size="small"
-                onClick={handleCheckedLeft}
-                disabled={rightChecked.length === 0}
-              >
-                <Typography color={rightChecked.length===0?"none":"black"}> &lt; </Typography>
-              </Button>
-              <Button
-                sx={{ my: 0.5 }}
-                variant="outlined"
-                size="small"
-                onClick={handleAllLeft}
-                disabled={right.length === 0}
-              >
-                <Typography color={right.length===0?"none":"black"}> &lt;&lt; </Typography>
-              </Button>
-            </Grid>
-          </Grid>
-          <Grid item>{customList(right,"right")}</Grid>
-        </Grid>
-        <Button
-          variant="contained"
-          component="label"  
-          sx = {{width:"300px"}}
-          onClick={()=>save()}                   
-        >SACUVAJ</Button>        
-      </Stack>
-      }
+      {hiddenForm && <Button sx={{mt: 3, ml:"78%"}} variant="contained" component="label">POTVRDI CEO NEDELJNI JELOVNIK</Button>}
+      {!hiddenForm && <Stack direction="row" spacing={2} sx={{m:5, ml: "20%"}} id="swingBox" className='swing-in-top-fwd'>
+        <Stack direction="column" spacing={2}><Autocomplete
+        disablePortal
+        id="combo-box-demo"
+        options={recipes.map((option) => option.Naslov)}
+        sx={{ width: 300 }}
+        value={chosenRecipe ? chosenRecipe.Naslov : null}
+        onChange={(event, newValue) => {autocompleteOnChange(newValue);}}
+        renderInput={(params) => <TextField {...params} label="Recepti" />}
+        />
+              
+        <Stack direction="column" spacing={3} sx={{ width: 300, m: 5 }}>{chosenRecipe &&  <Typography>Ukupno:<Input
+        edge="end"
+        aria-label="comments"
+        name="numberOfServings"
+        type="number"
+        value={numberOfServings}
+        onChange={(event) => {
+          setNumberOfServings(parseInt(event.target.value));
+        }}
+        inputProps={{ min: 1, max: 50, step: "1" }}
+        endAdornment={<InputAdornment position="end">Porcija</InputAdornment>}
+        /></Typography>}
+        <Button onClick={saveARecipeForASpecificMeal} className='swing-in-top-fwd' sx={{ width: 300 }} variant="contained" component="label">Sacuvaj</Button></Stack></Stack>
+        {chosenRecipe &&
+        <Card className='swing-in-top-fwd' sx={{ width: 530, height: 470 }}>
+                <CardMedia
+                    component="img"
+                    height="230"
+                    image={chosenRecipe.Slika}
+                    alt="Nemamo sliku :("
+                />
+                <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {chosenRecipe.Naslov}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {chosenRecipe.Opis.slice(0, 150) + "..."}
+                    </Typography>
+                </CardContent>
+                <CardActions spacing={2}>
+                  <IconButton aria-label="add to favorites">
+                    <FavoriteIcon /><Typography>{chosenRecipe.Broj_lajkova}</Typography>
+                  </IconButton>
+                  <Box>
+                  {groceriesForChosenRecipe.map(x=>
+                    <Chip label={generateLabelName(x)} sx={{m:0.5}} variant="outlined" color="primary" avatar={<Avatar src={x.Slika} alt="Nemamo sliku :(" />} />
+                  ).slice(0,3)}</Box>
+                  
+                </CardActions>
+            </Card>}
+        </Stack>}
+      </Box>}
     </Box>
   );
 };
-
-function not(a, b) {
-  return a.filter((value) => b.indexOf(value) === -1);
-}
-
-function intersection(a, b) {
-  return a.filter((value) => b.indexOf(value) !== -1);
-}

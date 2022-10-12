@@ -46,32 +46,35 @@ export const BasicInfoComponent = () => {
       setBasicInfoOfPatient({ ...basicInfoOfPatient, Datum_rodjenja: dateString});
     }
 
+    // 1 function
     const onClickEvent = (e) => {
       e.preventDefault();
       checkEverything();
     }
 
+    // 2 function
     const checkEmailEvent= () => {
       dispatch(checkEmailAction(Email));
     }
 
+    // 2 function, 3 function
     const checkEverything = () => {
-      console.log(basicInfoOfPatient);
       if(validEmail === undefined || validEmail === true)
-      {
+      { // 2 function
         checkEmailEvent();
-      }
+      } // 3 function
       if(validEmail === false)
       {
         if(!previewSource) {setError("Slika"); return;}
         if(basicInfoOfPatient.Cloudinary_public_id)
-        {
+        { // 3 function
           addBasicInfoFunction();
         }
         else{uploadImageFunction(previewSource);}
       }
     }
 
+    // 4 function
     const addBasicInfoFunction = () => {
       if(basicInfoOfPatient.Ime && basicInfoOfPatient.Prezime && basicInfoOfPatient.Email && basicInfoOfPatient.Lozinka && 
         basicInfoOfPatient.Lozinka2 && basicInfoOfPatient.Datum_rodjenja && basicInfoOfPatient.Telefon && basicInfoOfPatient.Adresa && basicInfoOfPatient.Slika)
@@ -86,18 +89,17 @@ export const BasicInfoComponent = () => {
       }
     }
 
+    // 3 function
     useEffect(()=>{
       if(basicInfo.Email === undefined)
       {
-        console.log("useeffect");
         if(validEmail === true)
         {
           setError("Email");
-          console.log("Nazalost email je vec zauzet, izaberite neki drugi.");
         }
         else {
           if(validEmail === false && Email !== undefined)
-          {
+          { //3 function
             checkEverything();
           }
           if(validEmail === undefined)
@@ -133,7 +135,6 @@ export const BasicInfoComponent = () => {
     }
 
     useEffect(()=>{
-      console.log("EFECT ZA CLOUD");
       if(basicInfo.Cloudinary_public_id && !basicInfoOfPatient.Cloudinary_public_id)
       {
         setBasicInfoOfPatient({ ...basicInfoOfPatient, Cloudinary_public_id: basicInfo.Cloudinary_public_id, Slika: basicInfo.Slika });

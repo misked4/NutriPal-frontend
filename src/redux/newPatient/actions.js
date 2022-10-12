@@ -68,8 +68,7 @@ export const getAllActivities = () => {
     return function (dispatch) {
         axios
         .get(`${process.env.REACT_APP_API}/activities`)
-        .then((resp) => {            
-            console.log(resp.data);
+        .then((resp) => {
             dispatch(getActivities(resp.data));
         })
         .catch((error) => console.log(error));
@@ -81,8 +80,6 @@ export const addPatientAction = (creatorId, additionalInfo, userInfo) => {
         axios
         .post(`${process.env.REACT_APP_API}/patient`, additionalInfo)
         .then((resp) => {
-            console.log("Response from addPatientAction: ",resp);
-            console.log("last added "+ resp.data[0].lastAdded);
             const newUserInfo = Object.assign({},userInfo);
             newUserInfo.Dodatne_info_Id = resp.data[0].lastAdded;
             dispatch(registerUser(creatorId, newUserInfo));
@@ -92,13 +89,10 @@ export const addPatientAction = (creatorId, additionalInfo, userInfo) => {
 }
 
 export const registerUser = (creatorId, userInfo) => {
-    console.log("CREATOR ID "+creatorId);
-    console.log("USER INFO " + userInfo.Dodatne_info_Id);
     return function (dispatch) {
         axios
         .post(`${process.env.REACT_APP_API}/user`, userInfo)
         .then((resp) => {
-            console.log("resResponse from registerUser: ",resp);
             dispatch(doneCreatingNewPatient());
         })
         .catch((error) => console.log(error));
@@ -113,7 +107,6 @@ export const uploadImage = (base64EncodedImage) => {
                     public_id: resp.data.public_id,
                     secure_url: resp.data.secure_url
                 }
-                console.log(info);
                 dispatch(addPublicIdAndSecureUrl(info));
             })
             .catch((error) => console.log(error));

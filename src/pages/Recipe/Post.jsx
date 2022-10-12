@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from 'react-redux';
-import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, CardActions, Checkbox, Box } from '@mui/material';
+import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, CardActions, Checkbox, Box, Chip } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AlarmOnIcon from '@mui/icons-material/AlarmOn';
 import LocalDiningOutlinedIcon from '@mui/icons-material/LocalDiningOutlined';
-import { increaseLikes, decreaseLikes, searchIfLiked } from './APIcomms';
+import { increaseLikes, decreaseLikes, searchIfLiked, getRecipeWithHisGroceries } from './APIcomms';
 import './Post.css'
-
+const numberToDisplay = 4;
 const Post = React.forwardRef(({post}, ref) => {
     const { user } = useSelector((state) => state.auth);
 
     const [postIsLiked, setPostIsLiked] = useState(false);
     const [numbersOfLikes, setNumbersOfLikes] = useState(post.Broj_lajkova);
+    const [groceriesForRecipe, setGroceriesForRecipe] = useState([]);
+    const [numbersOfGroceriesToDisplay, setNumbersOfGroceriesToDisplay] = useState(numberToDisplay);
+
     let dateFromSql = sqlToJsDate(post.Datum).toGMTString().replace('GMT', '');
     let NameAndSurname = post.Ime + " " + post.Prezime;
     
@@ -42,15 +45,26 @@ const Post = React.forwardRef(({post}, ref) => {
     }
 
     useEffect(()=>{
-            searchIfLiked(post.id, user[0].id)
-                .then(data=>{
-                    setPostIsLiked(true);
-                })
-                .catch(e=>{
-                    setPostIsLiked(false);
-                });
+        getRecipeWithHisGroceries(post.id)
+            .then(result=>setGroceriesForRecipe(result))
+            .catch(e=>console.log(e));
+        searchIfLiked(post.id, user[0].id)
+            .then(data=>{
+                setPostIsLiked(true);
+            })
+            .catch(e=>{
+                setPostIsLiked(false);
+            });
       },[]);
     
+    const generateLabelName = (grocery) => {
+        var name = "";
+        if(grocery.Naziv.length >= 40)
+            name = grocery.Naziv.slice(0, 40) + "...";
+        else name = grocery.Naziv.slice(0, 40) + " - ";
+        return name + "[" + grocery.Kolicina*100 + "gr" + "]";
+    }
+
     const postBody = (
         <>
             <Card sx={{margin:5}} className="scale-in-center">
@@ -82,6 +96,22 @@ const Post = React.forwardRef(({post}, ref) => {
                         </Typography>
                     </CardContent>
                 </Box>
+                <CardActions>
+                <Box>
+                  {groceriesForRecipe.map(x=>
+                    <Chip label={generateLabelName(x)} sx={{m:0.5}} variant="outlined" color="primary" avatar={<Avatar src={x.Slika} alt="Nemamo sliku :(" />} />
+                  ).slice(0,numbersOfGroceriesToDisplay)}
+                  {((groceriesForRecipe.length - numbersOfGroceriesToDisplay)>0)? 
+                    <IconButton aria-label="add to favorites" onClick={()=>setNumbersOfGroceriesToDisplay(groceriesForRecipe.length)}>
+                        <Chip label={"+" + (groceriesForRecipe.length - numberToDisplay)} sx={{m:0.5}} variant="outlined" color="primary"/>
+                    </IconButton> :
+                    (groceriesForRecipe.length - numberToDisplay) > 0 ?
+                    <IconButton aria-label="add to favorites" onClick={()=>setNumbersOfGroceriesToDisplay(numberToDisplay)}>
+                        <Chip label={"Sakrij"} sx={{m:0.5}} variant="outlined" color="primary"/>
+                    </IconButton> : <Box></Box>
+                  }
+                </Box>
+                </CardActions>
                 <CardActions disableSpacing>
                     <IconButton aria-label="add to favorites">
                         <Checkbox onChange={likePost} icon={<FavoriteBorderIcon />} checked={postIsLiked} checkedIcon={<FavoriteIcon sx={{color: "red"}}/>} />

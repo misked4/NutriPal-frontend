@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { hideRightBar, unhiddenRightBar } from './../redux/rightbar/actions';
+import './Rightbar.css'
 
 function changeHeightVmax() {
   document.getElementsByClassName("myDiv")[0].style.height = "100vmax";
@@ -44,8 +45,8 @@ const Sidebar = ({setMode, mode}) => {
     setTimeout(function(){
       dispatch(hideRightBar());
     }, 1200);
-    var element = document.getElementById("swingRight");
-    if (element.classList.contains('slide-in-right')) {
+    var element = document.getElementById('swingRight');
+    if (element && element.classList.contains('slide-in-right')) {
       element.classList.remove('slide-in-right');      
       element.classList.add('slide-out-right');
     }
@@ -76,8 +77,7 @@ const Sidebar = ({setMode, mode}) => {
   const navigateToAddingRecipe = () => {
     changeHidden();
     navigate('/newrecipe');
-    dispatch(unhiddenRightBar());
-    changeHeightVmax();
+    closeRightbar();
   };
   const navigateToAddingFoodSchedule = () => {
     changeHidden();
