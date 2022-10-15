@@ -8,6 +8,7 @@ const initialState = {
     diet: {},
     page: "1",
     allDone: false,
+    createdUser: null,
     validEmail : undefined,
     loading: true
 }
@@ -43,7 +44,8 @@ const newPatientReducers = (state = initialState, action) => {
         }
         case types.DONE_ADDING_NEW_PATIENT:
         return{
-            ...initialState
+            ...state,
+            createdUser: action.payload
         }
         case types.IMAGE_UPLOAD:
             return{

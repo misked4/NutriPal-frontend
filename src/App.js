@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { Routes, Route, Outlet } from 'react-router-dom';
@@ -24,6 +24,11 @@ import './App.css'
 
 function App() {
   const [mode, setMode] = useState("light");
+  const [nutritionRole, setNutritionRole] = useState(false);
+  const [adminRole, setAdminRole] = useState(false);
+
+  const [userForWeeklyPlan, setUserForWeeklyPlan] = useState([]);
+
   const theme = createTheme({
     palette: {
         mode: mode,
@@ -53,7 +58,22 @@ function App() {
 
   const { rightbarState } = useSelector(state => state.rightbar);
   const { user } = useSelector((state) => state.auth);
-
+  // {user.Uloga === 'Nutricionista' && user.Uloga!==null? 
+  useEffect(()=>{
+    if(user)
+    { 
+      setUserForWeeklyPlan(user);
+      if(user[0].Uloga === 'Nutricionista')
+        setNutritionRole(true);
+      else if (user[0].Uloga === 'Admin')
+        setAdminRole(true);
+      else {
+        setNutritionRole(false);
+        setAdminRole(false);
+      }
+    }
+    console.log(userForWeeklyPlan);
+  },[user]);
   return (
     <BrowserRouter>
       <Routes>
@@ -72,13 +92,13 @@ function App() {
             }>
               <Route index element={<Home />} />
               <Route path={"/home"} element={<Home />} />
-              <Route path={"/dashboard"} element={<Dashboard/>}/>
+              {nutritionRole && <Route path={"/dashboard"} element={<Dashboard/>}/>}
               <Route path={"/news"} element={<News/>}/>
 
-              <Route path={"/newpatient"} element={<NewPatient/>}/>
-              <Route path={"/newrecipe"} element={<NewRecipe/>}/>
-              <Route path={"/newfoodschedule"} element={<NewFoodSchedule personOnADietPlan={user[0]} />}/>
-              <Route path={"/newdiet"} element={<NewDiet/>}/>
+              {nutritionRole && <Route path={"/newpatient"} element={<NewPatient/>}/>}
+              {nutritionRole && <Route path={"/newrecipe"} element={<NewRecipe/>}/>}
+              {nutritionRole && <Route path={"/newfoodschedule"} element={<NewFoodSchedule personOnADietPlan={userForWeeklyPlan[0]} />}/>}
+              {adminRole && <Route path={"/newdiet"} element={<NewDiet/>}/>}
 
               <Route path={"/achievements"} element={<Achievements/>}/>
               <Route path={"/settings"} element={<Settings/>} />

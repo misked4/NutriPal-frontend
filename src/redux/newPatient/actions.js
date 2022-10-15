@@ -21,8 +21,9 @@ const getActivities = (allActivities) => ({
     type: types.GET_ACTIVITIES,
     payload: allActivities
 })
-const doneCreatingNewPatient = () => ({
-    type: types.DONE_ADDING_NEW_PATIENT
+const doneCreatingNewPatient = (userData) => ({
+    type: types.DONE_ADDING_NEW_PATIENT,
+    payload: userData
 })
 const addPublicIdAndSecureUrl = (informations) => ({
     type: types.IMAGE_UPLOAD,
@@ -93,7 +94,7 @@ export const registerUser = (creatorId, userInfo) => {
         axios
         .post(`${process.env.REACT_APP_API}/user`, userInfo)
         .then((resp) => {
-            dispatch(doneCreatingNewPatient());
+            dispatch(doneCreatingNewPatient(resp.data[0]));
         })
         .catch((error) => console.log(error));
     }

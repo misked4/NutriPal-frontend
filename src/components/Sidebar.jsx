@@ -14,7 +14,7 @@ import MedicationLiquidOutlinedIcon from '@mui/icons-material/MedicationLiquidOu
 import { theme } from "../theme";
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { hideRightBar, unhiddenRightBar } from './../redux/rightbar/actions';
 import './Rightbar.css'
 
@@ -30,6 +30,8 @@ function changeHeightToPercentage() {
 
 
 const Sidebar = ({setMode, mode}) => {
+  const { user } = useSelector((state) => state.auth);
+
   let dispatch = useDispatch();
 
   const [hidden, setHidden] = useState(false);
@@ -102,6 +104,7 @@ const Sidebar = ({setMode, mode}) => {
     changeHeightVmax();
   };
   // #endregion
+  
   return (
     <Box 
     bgcolor={theme.palette.secondary.main}
@@ -116,54 +119,54 @@ const Sidebar = ({setMode, mode}) => {
             </ListItemIcon>
             <ListItemText primary="Početna strana" onClick={navigateToHome}/>
           </ListItemButton>
-          <ListItemButton>
+          {user[0].Uloga === 'Nutricionista' && <ListItemButton>
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
-            <ListItemText primary="Moji pacijenti" onClick={navigateToDashboard}/>
-          </ListItemButton>
+            <ListItemText primary="Moji klijenti" onClick={navigateToDashboard}/>
+          </ListItemButton>}
           <ListItemButton>
             <ListItemIcon>
               <NewspaperIcon />
             </ListItemIcon>
             <ListItemText primary="Recepti" onClick={navigateToNews}/>
           </ListItemButton>
-          <ListItemButton>
+          {(user[0].Uloga === 'Nutricionista' || user[0].Uloga === 'Admin') && <ListItemButton>
             <ListItemIcon>
               <AddIcon />
             </ListItemIcon>
             <ListItemText primary="Dodaj" onClick={changeHidden}/>
-          </ListItemButton>
+          </ListItemButton>}
           <>{hidden && <List style={{
                               left: "15px"
                             }}>
               <Divider style={{
                               width: "200px"
                             }} />
-              <ListItemButton>
+              {user[0].Uloga === 'Nutricionista' && <ListItemButton>
                 <ListItemIcon>
                   <PersonAddAltOutlinedIcon />
                 </ListItemIcon>
-                <ListItemText primary="Novog pacijenta" onClick={navigateToAddingPatient}/>
-              </ListItemButton>
-              <ListItemButton>
+                <ListItemText primary="Novog klijenta" onClick={navigateToAddingPatient}/>
+              </ListItemButton>}
+              {user[0].Uloga === 'Nutricionista' && <ListItemButton>
                 <ListItemIcon>
                   <MenuBookOutlinedIcon />
                 </ListItemIcon>
                 <ListItemText primary="Novi recept" onClick={navigateToAddingRecipe}/>
-              </ListItemButton>
-              <ListItemButton>
+              </ListItemButton>}
+              {user[0].Uloga === 'Nutricionista' && <ListItemButton>
                 <ListItemIcon>
                   <EventNoteOutlinedIcon />
                 </ListItemIcon>
                 <ListItemText primary="Respored ishrane" onClick={navigateToAddingFoodSchedule}/>
-              </ListItemButton>
-              <ListItemButton>
+              </ListItemButton>}
+              {user[0].Uloga === 'Admin' && <ListItemButton>
                 <ListItemIcon>
                   <MedicationLiquidOutlinedIcon />
                 </ListItemIcon>
                 <ListItemText primary="Novu dijetu" onClick={navigateToAddingDiet}/>
-              </ListItemButton>
+              </ListItemButton>}
               <Divider style={{
                               width: "200px"
                             }} />

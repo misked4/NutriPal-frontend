@@ -5,7 +5,9 @@ import { Box, Typography, Button, InputLabel, MenuItem, Select, FormHelperText, 
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { Stack } from '@mui/system';
 import NextPlanIcon from '@mui/icons-material/NextPlan';
-import { getAllRecipesForNutri, getRecipeWithHisGroceries } from './APIcomms';
+import { getAllRecipesForNutri, getRecipeWithHisGroceries, postWeeklyMenu, getWeeklyMenu, getAdditionalInfoForPatient } from './APIcomms';
+import { DescriptionAlertError, DescriptionAlertSuccess } from '../../components/DescriptionAlerts';
+import { changePage } from '../../redux/newPatient/actions';
 import Autocomplete from '@mui/material/Autocomplete';
 import './NewFoodSchedule.css'
 
@@ -13,7 +15,9 @@ const n = 7;
 const m = 8;
 export const NewFoodSchedule = ({ personOnADietPlan }) => {
   const { user } = useSelector((state) => state.auth);
+  let dispatch = useDispatch();
 
+  const [success, setSuccess] = useState(false);
   const [matrix, setMatrix] = useState(Array.from({length: n},()=> Array.from({length: m}, () => null)));
   const [indexOfRow, setIndexOfRow] = useState(-1);
   const [indexOfColumn, setIndexOfColumn] = useState(-1);
@@ -24,6 +28,8 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
   const [chosenRecipe, setChosenRecipe] = useState(null);
   const [groceriesForChosenRecipe, setGroceriesForChosenRecipe] = useState([]);
   const [numberOfServings, setNumberOfServings] = useState(1);
+  const [percentOfServings, setPercentOfServings] = useState(0);
+  const thisIsForNutritionist = (personOnADietPlan.id === user[0].id? true: false);
 
   function AfterSlideIn() {
     setTimeout(function(){
@@ -39,30 +45,36 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
   }
 
   useEffect(()=>{
-    let copy = [...matrix];
-    copy[0][0] = "";
-    copy[0][1] = "Ponedeljak";
-    copy[0][2] = "Utorak";
-    copy[0][3] = "Sreda";
-    copy[0][4] = "Cetvrtak";
-    copy[0][5] = "Petak";
-    copy[0][6] = "Subota";
-    copy[0][7] = "Nedelja";
-    copy[1][0] = "Dorucak";
-    copy[2][0] = "Jutarnja uzina";
-    copy[3][0] = "Rucak";
-    copy[4][0] = "Popodnevna uzina";
-    copy[5][0] = "Vecera";
-    copy[6][0] = "Obrok posle vecere";
-    setMatrix(copy);
-    
-    //console.log("personOnADietPlan");
-    //console.log(personOnADietPlan);
+    if(!thisIsForNutritionist)
+    {
+      setPageRecipe(2);
+      getAdditionalInfoForPatient(personOnADietPlan.Dodatne_info_Id)
+        .then(result=>{
+          setGoal(result.Cilj_ishrane);
+          setMatrixFunction(user[0].id, personOnADietPlan.id,result.Cilj_ishrane);
+        })
+        .catch(e=>console.log(e));
+    }
+    console.log(personOnADietPlan);
     getAllRecipesForNutri(user[0].id)
           .then(result=>setRecipes(result))
           .catch(e=>console.log(e));
-    // dodati ovde citanje iz baze za svakoga za svaki cilj
   },[]);
+
+  useEffect(()=>{
+    if(thisIsForNutritionist)
+    {
+      console.log("EFFECT : " + user[0].id + ", PATTIE: " + personOnADietPlan.id);
+      setMatrixFunction(user[0].id, personOnADietPlan.id, goal);
+    }
+  },[goal]);
+
+  const setMatrixFunction = (nutriId, patientId, goal) => {
+    console.log("NUTRI : " + nutriId + ", PATTIE: " + patientId);
+    getWeeklyMenu(nutriId, patientId, goal)
+      .then(result=>{setMatrix(result); console.log(result);})
+      .catch(e=>console.log(e));
+  }
 
   const returnToNull = (rowIndex, columnIndex) => {
     let copy = [...matrix];
@@ -83,6 +95,11 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
     const recipeForUpdate = recipes.find(x => x.id === recipeIdFromMatrix);
     const getNumberOfServings = matrix[rowIndex][columnIndex].numberOfServings; 
     setNumberOfServings(getNumberOfServings);
+
+    const oldValue = recipeForUpdate.Broj_porcija;
+    const percent = (getNumberOfServings-oldValue)/Math.abs(oldValue) * 100;
+    setPercentOfServings(percent);
+    
     setChosenRecipe(recipeForUpdate);
     setIndexOfRow(rowIndex);
     setIndexOfColumn(columnIndex);
@@ -118,6 +135,9 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
       var newChosenRecipe = recipes.find(x => x.Naslov === newChosenName);
       setChosenRecipe(newChosenRecipe);
       setNumberOfServings(newChosenRecipe.Broj_porcija);
+
+      setPercentOfServings(0);
+
       getRecipeWithHisGroceries(newChosenRecipe.id)
             .then(result=>setGroceriesForChosenRecipe(result))
             .catch(e=>console.log(e));
@@ -128,21 +148,63 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
   // #region goal
   const onClickNext = () => {
     setPageRecipe(pageRecipe+1);
+    setSuccess(false);
   };
+
   const handleChangeGoal = (event) => {
+    console.log("handleChangeGoal");
+    if(thisIsForNutritionist)
       setGoal(event.target.value);
   };
+  
   const generateLabelName = (grocery) => {
     var name = "";
+    var newQuantity = percentOfServings==0? grocery.Kolicina : (grocery.Kolicina*(percentOfServings+100))/100;
+    console.log("newQuantity "+grocery.Naziv);
+    console.log(newQuantity);
+    newQuantity = Math.round(newQuantity*100);
     if(grocery.Naziv.length >= 40)
         name = grocery.Naziv.slice(0, 40) + "...";
     else name = grocery.Naziv.slice(0, 40) + " - ";
-    return name + "[" + grocery.Kolicina*100 + "gr" + "]";
+    return name + "[" + newQuantity + "gr" + "]";
 }
   // #endregion
 
+  const calculatePercent = (e) => {
+    const newValue = e.target.value;
+    setNumberOfServings(parseInt(newValue));
+    const oldValue = chosenRecipe.Broj_porcija;
+    const percent = (newValue-oldValue)/Math.abs(oldValue) * 100;
+    setPercentOfServings(percent);
+    console.log("newValue");
+    console.log(newValue);
+    console.log("oldValue");
+    console.log(oldValue);
+    console.log("percent");
+    console.log(percent);
+  }
+
+  const SaveWholeWeeklyMenu = () => {
+    const fullData = {
+      matrix: matrix,
+      userId: personOnADietPlan.id, //zapamti da prosledjujes sada id od personOnADietPlan !!!
+      goal: goal
+    }
+    postWeeklyMenu(fullData)
+          .then(result=>console.log(result))
+          .catch(e=>console.log(e));
+    
+    setPageRecipe(1);
+    setSuccess(true);
+    if(!thisIsForNutritionist)
+    {
+      dispatch(changePage("5"));
+    }
+  }
+
   return (
     <Box flex={4} p={2}>
+      {success && DescriptionAlertSuccess("Uspesno ste dodali nedeljni plan ishrane.")}
       {pageRecipe===1 && <Box sx={{m:5}}><Stack direction="row" spacing={2}>
             <Typography sx={{mt: 2, mr: 2}}>Izaberite cilj ishrane:</Typography>
             <FormControl required sx={{ m: 1, minWidth: 120 }}>
@@ -195,8 +257,8 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
                     className="buttonWithoutRadius"
                     id={rowIndex*10 + columnIndex}
                     onClick={()=>updateMatrixField(rowIndex, columnIndex)}         
-                  >&nbsp;IZMENI&nbsp;</Button> : <Button
-                      variant="contained"
+                  >&nbsp;IZMENI&nbsp;</Button> : <Button                      
+                      variant="outlined"
                       component="label"
                       sx={{width: "100%"}}
                       className="buttonWithoutRadius"   
@@ -210,7 +272,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
           </tbody>
         </table>
       </div>
-      {hiddenForm && <Button sx={{mt: 3, ml:"78%"}} variant="contained" component="label">POTVRDI CEO NEDELJNI JELOVNIK</Button>}
+      {hiddenForm &&  <Button onClick={SaveWholeWeeklyMenu} sx={{mt: 3, ml:"78%"}} variant="contained" component="label">POTVRDI CEO NEDELJNI JELOVNIK</Button>}
       {!hiddenForm && <Stack direction="row" spacing={2} sx={{m:5, ml: "20%"}} id="swingBox" className='swing-in-top-fwd'>
         <Stack direction="column" spacing={2}><Autocomplete
         disablePortal
@@ -228,9 +290,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
         name="numberOfServings"
         type="number"
         value={numberOfServings}
-        onChange={(event) => {
-          setNumberOfServings(parseInt(event.target.value));
-        }}
+        onChange={(event) => calculatePercent(event)}
         inputProps={{ min: 1, max: 50, step: "1" }}
         endAdornment={<InputAdornment position="end">Porcija</InputAdornment>}
         /></Typography>}
