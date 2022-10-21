@@ -6,7 +6,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AlarmOnIcon from '@mui/icons-material/AlarmOn';
 import LocalDiningOutlinedIcon from '@mui/icons-material/LocalDiningOutlined';
-import { increaseLikes, decreaseLikes, searchIfLiked, getRecipeWithHisGroceries } from './APIcomms';
+import { increaseLikes, decreaseLikes, searchIfLiked, getRecipeWithHisGroceries } from './APIcalls';
 import './Post.css'
 const numberToDisplay = 4;
 const Post = React.forwardRef(({post}, ref) => {
@@ -22,10 +22,8 @@ const Post = React.forwardRef(({post}, ref) => {
     
     //u useeffect ovde ispitati kroz listu svojih lajkova da li smo lajkovali
     const likePost = () => {
-        console.log(postIsLiked);
         if(postIsLiked === false)
         {
-            console.log("INCREASE" + postIsLiked);
             increaseLikes(post.id, user[0].id)
             .then(data=>{
                 setPostIsLiked(true);
@@ -34,7 +32,6 @@ const Post = React.forwardRef(({post}, ref) => {
             .catch(e=>console.log(e));
         }
         else{
-            console.log("DECREASE " +postIsLiked );
             decreaseLikes(post.id, user[0].id)
             .then(data=>{
                 setPostIsLiked(false);                
@@ -99,15 +96,15 @@ const Post = React.forwardRef(({post}, ref) => {
                 <CardActions>
                 <Box>
                   {groceriesForRecipe.map(x=>
-                    <Chip label={generateLabelName(x)} sx={{m:0.5}} variant="outlined" color="primary" avatar={<Avatar src={x.Slika} alt="Nemamo sliku :(" />} />
+                    <Chip key={x.NamirnicaId} label={generateLabelName(x)} sx={{m:0.5}} variant="outlined" color="primary" avatar={<Avatar src={x.Slika} alt="Nemamo sliku :(" />} />
                   ).slice(0,numbersOfGroceriesToDisplay)}
                   {((groceriesForRecipe.length - numbersOfGroceriesToDisplay)>0)? 
                     <IconButton aria-label="add to favorites" onClick={()=>setNumbersOfGroceriesToDisplay(groceriesForRecipe.length)}>
-                        <Chip label={"+" + (groceriesForRecipe.length - numberToDisplay)} sx={{m:0.5}} variant="outlined" color="primary"/>
+                        <Chip key={6666} label={"+" + (groceriesForRecipe.length - numberToDisplay)} sx={{m:0.5}} variant="outlined" color="primary"/>
                     </IconButton> :
                     (groceriesForRecipe.length - numberToDisplay) > 0 ?
                     <IconButton aria-label="add to favorites" onClick={()=>setNumbersOfGroceriesToDisplay(numberToDisplay)}>
-                        <Chip label={"Sakrij"} sx={{m:0.5}} variant="outlined" color="primary"/>
+                        <Chip key={7777} label={"Sakrij"} sx={{m:0.5}} variant="outlined" color="primary"/>
                     </IconButton> : <Box></Box>
                   }
                 </Box>

@@ -5,7 +5,7 @@ import { Box, Typography, Button, InputLabel, MenuItem, Select, FormHelperText, 
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { Stack } from '@mui/system';
 import NextPlanIcon from '@mui/icons-material/NextPlan';
-import { getAllRecipesForNutri, getRecipeWithHisGroceries, postWeeklyMenu, getWeeklyMenu, getAdditionalInfoForPatient } from './APIcomms';
+import { getAllRecipesForNutri, getRecipeWithHisGroceries, postWeeklyMenu, getWeeklyMenu, getAdditionalInfoForPatient } from './APIcalls';
 import { DescriptionAlertError, DescriptionAlertSuccess } from '../../components/DescriptionAlerts';
 import { changePage } from '../../redux/newPatient/actions';
 import Autocomplete from '@mui/material/Autocomplete';

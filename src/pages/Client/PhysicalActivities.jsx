@@ -22,7 +22,8 @@ export const PhysicalActivities = () => {
         Visina: additionalInfo.Visina,
         Tezina: additionalInfo.Tezina,
         Cilj_ishrane: additionalInfo.Cilj_ishrane,
-        PotrosnjaKalorija: '25' || additionalInfo.PotrosnjaKalorija
+        PotrosnjaKalorija: '25' || additionalInfo.PotrosnjaKalorija,
+        DijetaId: additionalInfo.DijetaId
         }
     const [ additionalInfoPatient, setAdditionalInfoPatient ] = useState(initialStateAddInfo);
     const { PotrosnjaKalorija } = additionalInfoPatient;
@@ -120,6 +121,7 @@ export const PhysicalActivities = () => {
     }
 
     useEffect(() => {
+      console.log(additionalInfo);
       dispatch(getAllActivities());
     },[]);
 

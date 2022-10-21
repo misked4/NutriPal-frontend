@@ -10,11 +10,10 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { Stack } from '@mui/system';
 import { theme } from './../../theme';
 import { DescriptionAlertError, DescriptionAlertSuccess } from '../../components/DescriptionAlerts';
-import { uploadImage } from './APIcomms';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import NextPlanIcon from '@mui/icons-material/NextPlan';
 import InfoIcon from '@mui/icons-material/Info';
-import { getAllGroceries, getGroceriesByName } from './APIcomms';
+import { getAllGroceries, getGroceriesByName, uploadImage } from './APIcalls';
 import axios from "axios";
 
 export const NewRecipe = () => {

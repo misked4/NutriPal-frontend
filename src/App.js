@@ -12,7 +12,7 @@ import { Stack } from "@mui/system";
 import { createTheme } from "@mui/material";
 import ProtectedRoutes from "./pages/Entry/ProtectedRoutes";
 import { Home } from './pages/Home';
-import { Dashboard } from './pages/Dashboard';
+import { MyClients } from './pages/MyClients';
 import { News } from './pages/News';
 import { Achievements } from './pages/Achievements';
 import { Settings } from './pages/Settings';
@@ -21,6 +21,7 @@ import { NewFoodSchedule } from './pages/Food_schedule/NewFoodSchedule';
 import { NewDiet } from './pages/Diet/NewDiet';
 import { NewRecipe } from './pages/Recipe/NewRecipe';
 import './App.css'
+import { ClientWeekSchedule } from './pages/ClientWeekSchedule/ClientWeekSchedule';
 
 function App() {
   const [mode, setMode] = useState("light");
@@ -36,13 +37,13 @@ function App() {
             main: "#3C3431",
         },
         secondary:{
-            main: "#E1C391",
-        },
-        tan: {
             main: "#705446",
         },
-        beige: {
+        tan: {
             main: "#E1C391",
+        },
+        beige: {
+            main: "#705446",
         },
         cream:{
             main: "#FDF4E3",
@@ -72,7 +73,6 @@ function App() {
         setAdminRole(false);
       }
     }
-    console.log(userForWeeklyPlan);
   },[user]);
   return (
     <BrowserRouter>
@@ -92,13 +92,14 @@ function App() {
             }>
               <Route index element={<Home />} />
               <Route path={"/home"} element={<Home />} />
-              {nutritionRole && <Route path={"/dashboard"} element={<Dashboard/>}/>}
+              {nutritionRole && <Route path={"/myclients"} element={<MyClients/>}/>}
               <Route path={"/news"} element={<News/>}/>
 
               {nutritionRole && <Route path={"/newpatient"} element={<NewPatient/>}/>}
               {nutritionRole && <Route path={"/newrecipe"} element={<NewRecipe/>}/>}
               {nutritionRole && <Route path={"/newfoodschedule"} element={<NewFoodSchedule personOnADietPlan={userForWeeklyPlan[0]} />}/>}
               {adminRole && <Route path={"/newdiet"} element={<NewDiet/>}/>}
+              <Route path={"/mufoodschedule"} element={<ClientWeekSchedule/>}/>
 
               <Route path={"/achievements"} element={<Achievements/>}/>
               <Route path={"/settings"} element={<Settings/>} />

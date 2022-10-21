@@ -4,13 +4,13 @@ import HomeIcon from '@mui/icons-material/Home';
 import AddIcon from '@mui/icons-material/Add';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import SettingsIcon from '@mui/icons-material/Settings';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
 import MedicationLiquidOutlinedIcon from '@mui/icons-material/MedicationLiquidOutlined';
+import GroupIcon from '@mui/icons-material/Group';
 import { theme } from "../theme";
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
@@ -60,8 +60,8 @@ const Sidebar = ({setMode, mode}) => {
     dispatch(unhiddenRightBar());
     changeHeightVmax();
   };
-  const navigateToDashboard = () => {
-    navigate('/dashboard');
+  const navigateToMyClients = () => {
+    navigate('/myclients');
     closeRightbar();
     changeHeightVmax();
   };
@@ -93,6 +93,11 @@ const Sidebar = ({setMode, mode}) => {
     dispatch(unhiddenRightBar());
     changeHeightVmax();
   };
+  const navigateToMyFoodSchedule = () => {
+    navigate('/mufoodschedule');
+    closeRightbar();
+    changeHeightVmax();
+  }
   const navigateToAchievements = () => {
     navigate('/achievements');
     closeRightbar();
@@ -121,9 +126,9 @@ const Sidebar = ({setMode, mode}) => {
           </ListItemButton>
           {user[0].Uloga === 'Nutricionista' && <ListItemButton>
             <ListItemIcon>
-              <DashboardIcon />
+              <GroupIcon />
             </ListItemIcon>
-            <ListItemText primary="Moji klijenti" onClick={navigateToDashboard}/>
+            <ListItemText primary="Moji klijenti" onClick={navigateToMyClients}/>
           </ListItemButton>}
           <ListItemButton>
             <ListItemIcon>
@@ -171,6 +176,12 @@ const Sidebar = ({setMode, mode}) => {
                               width: "200px"
                             }} />
               </List>}</>
+          <ListItemButton>
+            <ListItemIcon>
+              <EventNoteOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Moj nedeljni jelovnik" onClick={navigateToMyFoodSchedule}/>
+          </ListItemButton>
           <ListItemButton>
             <ListItemIcon>
               <EmojiEventsIcon />

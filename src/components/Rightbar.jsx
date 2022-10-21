@@ -2,7 +2,7 @@ import React from 'react';
 import { AvatarGroup, Box, Typography, Avatar, Divider, ImageList, ImageListItem } from '@mui/material';
 import { theme } from "../theme";
 import { useEffect, useState } from 'react';
-import { getRecipePage } from '../pages/Recipe/APIcomms';
+import { getRecipePage } from '../pages/Recipe/APIcalls';
 import './Rightbar.css'
 
 export const Rightbar = () => {

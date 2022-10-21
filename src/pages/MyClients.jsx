@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { deletePatientAction, loadPatientsAction, searchPatientsAction } from '../redux/patients/actions';
 import Autocomplete from '@mui/material/Autocomplete';
 
-export const Dashboard = () => {
+export const MyClients = () => {
   let dispatch = useDispatch();
   const { users } = useSelector(state => state.patients); //ovde "users" naziv promenljive MORA BITI ISTI KAO u reducer.js promenljiva koja
   //je zapravo za InitialState

@@ -14,12 +14,13 @@ import NewspaperIcon from '@mui/icons-material/Newspaper';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import Post from '../pages/Recipe/Post';
+import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
 //---ovo je za pribavljanje informacija iz state
 
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, reset } from '../pages/Entry/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
-import { returnUnseenLikes, getRecipe, setSeenAllNotifications } from '../pages/Recipe/APIcomms';
+import { returnUnseenLikes, getRecipe, setSeenAllNotifications } from '../pages/Recipe/APIcalls';
 import { Stack } from '@mui/system';
  
 function changeHeightVmax() {
@@ -97,6 +98,10 @@ const Navbar = () => {
     navigate('/news');
     changeHeightToPercentage();
   };
+  const navigateToMyFoodSchedule = () => {
+    navigate('/mufoodschedule');
+    changeHeightVmax();
+  }
 
   const menuItemNotification = notifications.length === 0 ?
     <StyledToolbar>
@@ -104,9 +109,9 @@ const Navbar = () => {
         <MenuItem>Nemate notifikacija</MenuItem>
     </StyledToolbar>
     : notifications.map((notification, i) => {
-    return <StyledToolbar key={notification.lajkReceptId}>
+    return <StyledToolbar key={notification.receptId}>
               <FavoriteIcon/>
-                <MenuItem key={notification.lajkReceptId} onClick={()=>handleClickOpen(notification.receptId)} sx={{display:{xs:"block",sm:"flex"}}}>
+                <MenuItem key={notification.receptId} onClick={()=>handleClickOpen(notification.receptId)} sx={{display:{xs:"block",sm:"flex"}}}>
                   <Typography sx={{fontStyle: 'italic',fontWeight: 'bold'}}>{notification.Ime} {notification.Prezime} </Typography>
                   <Typography> &nbsp; {"Vam je lajkovao recept sa nazivom"} &nbsp; </Typography>
                   <Typography sx={{fontStyle: 'italic',fontWeight: 'bold'}}> {notification.Naslov}.</Typography>
@@ -124,6 +129,7 @@ const Navbar = () => {
         <UserBoxForMobile>
           <HomeIcon onClick={navigateToHome} />
           <NewspaperIcon onClick={navigateToNews} />
+          <EventNoteOutlinedIcon onClick={navigateToMyFoodSchedule}/>
         </UserBoxForMobile>
         <Search>
           <InputBase placeholder="search..."></InputBase>
@@ -141,7 +147,7 @@ const Navbar = () => {
             <NotificationsIcon color="blue"/>
           </Badge>
           <Stack direction="row" spacing={0.5} alignItems="center"> 
-            <Avatar onClick={e=>setOpenProfileInfo(true)} sx={{width:40, height:40}} src={user[0].Slika}/>
+            <Avatar onClick={e=>setOpenProfileInfo(true)} sx={{width:30, height:30}} src={user[0].Slika}/>
             <Typography variant="span">{user[0].Ime}</Typography>
           </Stack>
         </UserBoxForMobile>

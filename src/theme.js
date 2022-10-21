@@ -6,16 +6,16 @@ export const theme = createTheme({
             main: "#3C3431",
         },
         secondary:{
-            main: "#E1C391",
+            main: "#705446",
         },
         third: {
-            main: "#705446",
+            main: "#E1C391", //ovaE1C391
         },
         tan: {
-            main: "#705446",
+            main: "#E1C391",
         },
         beige: {
-            main: "#E1C391",
+            main: "#705446", //ova
         },
         cream:{
             main: "#FDF4E3",
