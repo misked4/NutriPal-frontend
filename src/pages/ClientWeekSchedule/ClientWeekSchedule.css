@@ -1,7 +1,28 @@
+.groceryClass{
+	width: inherit;
+}
 .tableSchedule {
     /* border-spacing: 10px; razmak izmedju cells (trenutno nema smisla jer ga border-collapse spaja)*/
     border-collapse: collapse; /* da bi se spojile sve linije, bez ovoga su samo linije oko teksta za svaku celiju */
     width: 100%
+}
+
+td{
+	text-overflow: ellipsis;
+	font-weight: 1.875em;
+	text-align:center;
+  	vertical-align:middle;
+	width: 12.5%;
+	height: 16.6%
+}
+
+.tdClassName {
+    margin: 0;
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-weight: 600;
+    font-size: 0.7rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
 }
 
 .tableSchedule, tr, td, th {

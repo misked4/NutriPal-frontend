@@ -16,15 +16,15 @@ export const NewDiet = () => {
         Opis: '',
         UH_min: '',
         UH_max: '',
-        BEL_min: '',
-        BEL_max: '',
+        PROTEINI_min: '',
+        PROTEINI_max: '',
         MASTI_min: '',
         MASTI_max: '',
         KreatorId: user[0].id
     }
     
     const [dietData, setDietData] = useState(initialState);
-    const { Naziv, Opis, UH_min, UH_max, BEL_min, BEL_max, MASTI_min, MASTI_max } = dietData;
+    const { Naziv, Opis, UH_min, UH_max, PROTEINI_min, PROTEINI_max, MASTI_min, MASTI_max } = dietData;
     
     const [ errorState, setErrorState ] = useState(false);
     const [ successState, setSuccessState ] = useState(false);
@@ -39,9 +39,9 @@ export const NewDiet = () => {
     }
 
     const saveDiet = () => {
-        if(UH_max <= 100 && BEL_max <= 100 && MASTI_max <= 100
-            && UH_min >= 0 && BEL_min >= 0 && MASTI_min >= 0 && Naziv!==undefined
-            && UH_max > UH_min && BEL_max > BEL_min && MASTI_max > MASTI_min)
+        if(UH_max <= 100 && PROTEINI_max <= 100 && MASTI_max <= 100
+            && UH_min >= 0 && PROTEINI_min >= 0 && MASTI_min >= 0 && Naziv!==undefined
+            && UH_max > UH_min && PROTEINI_max > PROTEINI_min && MASTI_max > MASTI_min)
         {
             console.log(dietData);
             dispatch(addDiet(dietData));
@@ -53,8 +53,8 @@ export const NewDiet = () => {
                 ...prevState,
                 UH_min: '',
                 UH_max: '',
-                BEL_min: '',
-                BEL_max: '',
+                PROTEINI_min: '',
+                PROTEINI_max: '',
                 MASTI_min: '',
                 MASTI_max: ''
               }));
@@ -168,9 +168,9 @@ export const NewDiet = () => {
                 sx={themeForStack}>                    
                     <TextField
                         id="outlined-textarea"
-                        label="BEL_min"
-                        name="BEL_min"
-                        value={BEL_min}
+                        label="PROTEINI_min"
+                        name="PROTEINI_min"
+                        value={PROTEINI_min}
                         onChange={onChangeParameter}
                         placeholder="Unesite min Belancevine"
                         maxrows={1}
@@ -183,9 +183,9 @@ export const NewDiet = () => {
                     />
                     <TextField
                     id="outlined-textarea"
-                    label="BEL_max"
-                    name="BEL_max"
-                    value={BEL_max}
+                    label="PROTEINI_max"
+                    name="PROTEINI_max"
+                    value={PROTEINI_max}
                     onChange={onChangeParameter}
                     placeholder="Unesite max Belancevine"
                     maxrows={1}

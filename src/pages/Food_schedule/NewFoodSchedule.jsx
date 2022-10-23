@@ -69,13 +69,11 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
   useEffect(()=>{
     if(thisIsForNutritionist)
     {
-      console.log("EFFECT : " + user[0].id + ", PATTIE: " + personOnADietPlan.id);
       setMatrixFunction(user[0].id, personOnADietPlan.id, goal);
     }
   },[goal]);
 
   const setMatrixFunction = (nutriId, patientId, goal) => {
-    console.log("NUTRI : " + nutriId + ", PATTIE: " + patientId);
     getWeeklyMenu(nutriId, patientId, goal)
       .then(result=>{setMatrix(result); console.log(result);})
       .catch(e=>console.log(e));
@@ -92,7 +90,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
     setIndexOfRow(rowIndex);
     setIndexOfColumn(columnIndex);
     setHiddenForm(false);
-    setChosenRecipe(null);
+    setChosenRecipe(null);//ovde dodaj kcal, proteini, masti, uh na null
   }
 
   const updateMatrixField = (rowIndex, columnIndex) => {
@@ -117,7 +115,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
     setNumberOfServings(1);
   }
 
-  const setFieldInMatrix = (rowIndex, columnIndex) => {
+  const setFieldInMatrix = (rowIndex, columnIndex) => { //ovde izracunaj kalorije
     var copy = [...matrix];
     if(chosenRecipe != null)
     {
@@ -165,8 +163,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
   const generateLabelName = (grocery) => {
     var name = "";
     var newQuantity = percentOfServings==0? grocery.Kolicina : (grocery.Kolicina*(percentOfServings+100))/100;
-    console.log("newQuantity "+grocery.Naziv);
-    console.log(newQuantity);
+
     newQuantity = Math.round(newQuantity*100);
     if(grocery.Naziv.length >= 40)
         name = grocery.Naziv.slice(0, 40) + "...";
@@ -181,12 +178,6 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
     const oldValue = chosenRecipe.Broj_porcija;
     const percent = (newValue-oldValue)/Math.abs(oldValue) * 100;
     setPercentOfServings(percent);
-    console.log("newValue");
-    console.log(newValue);
-    console.log("oldValue");
-    console.log(oldValue);
-    console.log("percent");
-    console.log(percent);
   }
 
   const SaveWholeWeeklyMenu = () => {

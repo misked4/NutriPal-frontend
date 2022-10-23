@@ -61,7 +61,10 @@ export const addPatientAction = (creatorId, info) => {
         Tezina: info.Tezina,
         PotrosnjaKalorija: info.PotrosnjaKalorija,
         KreatorId: info.KreatorId,
-        DijetaId: info.DijetaId
+        DijetaId: info.DijetaId,
+        BMR: info.BMR,
+        TEE: info.TEE,
+        BMI: info.BMI
     };
     const userInfo = {
         Ime: info.Ime,

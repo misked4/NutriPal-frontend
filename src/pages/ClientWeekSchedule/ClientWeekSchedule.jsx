@@ -26,8 +26,9 @@ export const ClientWeekSchedule = () => {
         margin:       2,
         filename:     'Moj_nedeljni_plan_ishrane.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, logging: true, dpi: 192, letterRendering: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        html2canvas:  { scale: 2, logging: true, dpi: 192, letterRendering: true, backgroundColor: null },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' },
+        pagebreak: { before: '.groceryClass', after: ['#groceryClass'], avoid: 'groceryClass' }
         });
     }
 
@@ -126,7 +127,7 @@ export const ClientWeekSchedule = () => {
                     rowIndex===5 && columnIndex===0? <td key={rowIndex*10 + columnIndex}><Typography align="center">Vecera</Typography></td> :
                     rowIndex===6 && columnIndex===0? <td key={rowIndex*10 + columnIndex}><Typography align="center">Obrok pred spavanje</Typography></td> :
                     <td data-title={fullMatrix[0][columnIndex]} key={rowIndex*10 + columnIndex}>
-                        {fullMatrix[rowIndex][columnIndex]? <Typography>{fullMatrix[rowIndex][columnIndex].chosenRecipeName} ({fullMatrix[rowIndex][columnIndex].numberOfServings} porcija)</Typography> : <Typography>-</Typography>}
+                        {fullMatrix[rowIndex][columnIndex]? <div className="tdClassName">{fullMatrix[rowIndex][columnIndex].chosenRecipeName} ({fullMatrix[rowIndex][columnIndex].numberOfServings} porcija)</div> : <Typography>-</Typography>}
                     </td>
                     ))}
                 </tr>
@@ -135,23 +136,21 @@ export const ClientWeekSchedule = () => {
             </table>
         </div>}
         {allRecipesSetted && allRecipesWithoutDuplicate.map((data, index) => (
-            <Box sx={{m:4}}>
+            <Box sx={{m:4}} id="groceryClass" className="groceryClass">
                 <Typography sx={{ fontStyle: 'italic', ml:"25%" }} variant="h4" width="50%">{data.recipe.recipeData.Naslov} ({data.numberOfServings} porcija)</Typography>
-                <Stack direction="row" spacing={1}> 
-                    <Box width="50%">
-                        <Typography variant="h5" sx={{ml:"10%"}} width="50%">Nacin spremanja recepta: </Typography>
-                        <Typography variant="subtitle2" sx={{ml:"15%", border: 0.5}} width="50%">{data.recipe.recipeData.Opis}</Typography>
-                    </Box>
-                    <Box width="50%">
-                        <Typography variant="h5" sx={{ml:"10%"}} width="50%">Sastojci: </Typography>
-                        {data.recipe.allGroceries.map((grocery, index)=>(
-                            <Stack direction="row" spacing={2}>
-                                <Typography variant="subtitle2" sx={{ml:"15%"}} width="50%">- {grocery.Naziv}</Typography>
-                                <Typography variant="subtitle2" sx={{ml:"15%"}} width="50%">{calculateQuantity(data.numberOfServings, data.recipe.recipeData.Broj_porcija, grocery.Kolicina)} gr</Typography>
-                            </Stack>
-                        ))}
-                    </Box>
-                </Stack>
+                <Box width="50%">
+                    <Typography variant="h5" sx={{ml:"10%"}} width="50%">Nacin spremanja recepta: </Typography>
+                    <Typography variant="subtitle2" sx={{ml:"15%", border: 0.5}} width="50%">{data.recipe.recipeData.Opis}</Typography>
+                </Box>
+                <Box width="50%">
+                    <Typography variant="h5" sx={{ml:"10%"}} width="50%">Sastojci: </Typography>
+                    {data.recipe.allGroceries.map((grocery, index)=>(
+                        <Stack direction="row" spacing={2}>
+                            <Typography variant="subtitle2" sx={{ml:"15%"}} width="50%">- {grocery.Naziv}</Typography>
+                            <Typography variant="subtitle2" sx={{ml:"15%"}} width="50%">{calculateQuantity(data.numberOfServings, data.recipe.recipeData.Broj_porcija, grocery.Kolicina)} gr</Typography>
+                        </Stack>
+                    ))}
+                </Box>
                 <Divider/>
             </Box>
         ))}

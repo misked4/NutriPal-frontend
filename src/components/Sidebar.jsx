@@ -176,12 +176,12 @@ const Sidebar = ({setMode, mode}) => {
                               width: "200px"
                             }} />
               </List>}</>
-          <ListItemButton>
+            {user[0].Uloga === 'Korisnik' && <ListItemButton>
             <ListItemIcon>
               <EventNoteOutlinedIcon />
             </ListItemIcon>
             <ListItemText primary="Moj nedeljni jelovnik" onClick={navigateToMyFoodSchedule}/>
-          </ListItemButton>
+          </ListItemButton>}
           <ListItemButton>
             <ListItemIcon>
               <EmojiEventsIcon />

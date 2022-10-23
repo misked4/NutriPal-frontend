@@ -85,7 +85,10 @@ const Navbar = () => {
   };
 
   useEffect(()=>{
-    dispatch(loadPatientsAction(user[0].id));
+    if(user[0].Uloga === "Nutricionista")
+    {
+      dispatch(loadPatientsAction(user[0].id));
+    }
     returnUnseenLikes(user[0].id)
       .then(data=>{
           setNotifications(data);
@@ -130,7 +133,10 @@ const Navbar = () => {
   };
 
   const closeFullDialogProfile = () => {
-    dispatch(loadPatientsAction(user[0].id));
+    if(user[0].Uloga === "Nutricionista")
+    {
+      dispatch(loadPatientsAction(user[0].id));
+    }
     setOpenFullDialogForProfile(false);
   };
   // #endregion

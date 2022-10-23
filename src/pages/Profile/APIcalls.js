@@ -35,7 +35,10 @@ export const updateUserAndHisAdditionalInfo = async (info) => {
             Tezina: info.Tezina,
             PotrosnjaKalorija: info.PotrosnjaKalorija,
             DijetaId: info.DijetaId,
-            Cilj_ishrane: info.Cilj_ishrane
+            Cilj_ishrane: info.Cilj_ishrane,
+            /*BMR: info.BMR,
+            TEE: info.TEE,
+            BMI: info.BMI*/
         }
         console.log(userAddInfo);
         const response = await axios.put(`${process.env.REACT_APP_API}/patient/${info.Dodatne_info_Id}`, userAddInfo)
