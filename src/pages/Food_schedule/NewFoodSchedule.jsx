@@ -33,6 +33,14 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
   const [chosenRecipe, setChosenRecipe] = useState(null);
   const [groceriesForChosenRecipe, setGroceriesForChosenRecipe] = useState([]);
   const [numberOfServings, setNumberOfServings] = useState(1);
+
+  // #region additional fields
+  const [sumKcal, setSumKcal] = useState(0);
+  const [sumUH, setSumUH] = useState(0);
+  const [sumProteini, setSumProteini] = useState(0);
+  const [sumMasti, setSumMasti] = useState(0);
+  // #endregion
+
   const [percentOfServings, setPercentOfServings] = useState(0);
   const thisIsForNutritionist = (personOnADietPlan.id === user[0].id? true: false);
 
@@ -40,6 +48,11 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
     setTimeout(function(){
       setHiddenForm(true);
       setChosenRecipe(null);
+      setNumberOfServings(1);
+      setSumKcal(0);
+      setSumUH(0);
+      setSumProteini(0);
+      setSumMasti(0);
     }, 1200);
     var element = document.getElementById("swingBox");
     
@@ -86,11 +99,16 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
     console.log(matrix);
   };
 
-  const setIndexes = (rowIndex, columnIndex) => {
+  const addMatrixField = (rowIndex, columnIndex) => {
     setIndexOfRow(rowIndex);
     setIndexOfColumn(columnIndex);
     setHiddenForm(false);
     setChosenRecipe(null);//ovde dodaj kcal, proteini, masti, uh na null
+    
+    setSumKcal(0);
+    setSumUH(0);
+    setSumProteini(0);
+    setSumMasti(0);
   }
 
   const updateMatrixField = (rowIndex, columnIndex) => {
@@ -102,28 +120,39 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
     const oldValue = recipeForUpdate.Broj_porcija;
     const percent = (getNumberOfServings-oldValue)/Math.abs(oldValue) * 100;
     setPercentOfServings(percent);
+    /*setSumKcal(matrix[rowIndex][columnIndex].sum_kcal);
+    setSumUH(matrix[rowIndex][columnIndex].sum_UH);
+    setSumProteini(matrix[rowIndex][columnIndex].sum_PROTEINI);
+    setSumMasti(matrix[rowIndex][columnIndex].sum_MASTI);*/
     
     setChosenRecipe(recipeForUpdate);
+    populateArrayOfGroceries(recipeIdFromMatrix ,percent);
     setIndexOfRow(rowIndex);
     setIndexOfColumn(columnIndex);
     setHiddenForm(false);
+
+    console.log(matrix[rowIndex][columnIndex]);
   }
 
   const saveARecipeForASpecificMeal = () => {
-    setFieldInMatrix(indexOfRow, indexOfColumn);
+    putFieldInMatrix(indexOfRow, indexOfColumn);
     AfterSlideIn();
-    setNumberOfServings(1);
   }
 
-  const setFieldInMatrix = (rowIndex, columnIndex) => { //ovde izracunaj kalorije
+  const putFieldInMatrix = (rowIndex, columnIndex) => {
     var copy = [...matrix];
+
     if(chosenRecipe != null)
     {
-      let recipeIdAndNumberOfServings = {
+      let infoAboutRecipe = {
         chosenRecipe: chosenRecipe.id,
-        numberOfServings: numberOfServings
+        numberOfServings: numberOfServings,
+        sum_kcal: sumKcal,
+        sum_UH: sumUH,
+        sum_PROTEINI: sumProteini,
+        sum_MASTI: sumMasti
       }
-      copy[rowIndex][columnIndex] = recipeIdAndNumberOfServings;
+      copy[rowIndex][columnIndex] = infoAboutRecipe;
     }
     else {
       copy[rowIndex][columnIndex] = null;
@@ -138,14 +167,35 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
       var newChosenRecipe = recipes.find(x => x.Naslov === newChosenName);
       setChosenRecipe(newChosenRecipe);
       setNumberOfServings(newChosenRecipe.Broj_porcija);
-
       setPercentOfServings(0);
-
-      getRecipeWithHisGroceries(newChosenRecipe.id)
-            .then(result=>setGroceriesForChosenRecipe(result))
-            .catch(e=>console.log(e));
+      populateArrayOfGroceries(newChosenRecipe.id, 0);
     }
     else setChosenRecipe(null);
+  }
+
+  const populateArrayOfGroceries = (recipeId, percent) => {
+    getRecipeWithHisGroceries(recipeId)
+            .then(result=>{
+              setGroceriesForChosenRecipe(result);
+              var sum_KCAL = 0;
+              var sum_UH = 0;
+              var sum_PROTEINI = 0;
+              var sum_MASTI = 0;
+              result.forEach((grocery) => {
+                var newQuantity = percent==0? grocery.Kolicina : (grocery.Kolicina*(percent+100))/100;
+        
+                sum_KCAL += Math.round(grocery.kcal*newQuantity);
+                sum_UH += Math.round(grocery.UH*newQuantity);
+                sum_PROTEINI += Math.round(grocery.Proteini*newQuantity);
+                sum_MASTI += Math.round(grocery.Masti*newQuantity);
+              })
+              setSumKcal(sum_KCAL);
+              setSumUH(sum_UH);
+              setSumProteini(sum_PROTEINI);
+              setSumMasti(sum_MASTI);
+              setPercentOfServings(percent);
+            })
+            .catch(e=>console.log(e));
   }
 
   // #region goal
@@ -168,7 +218,9 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
     if(grocery.Naziv.length >= 40)
         name = grocery.Naziv.slice(0, 40) + "...";
     else name = grocery.Naziv.slice(0, 40) + " - ";
-    return name + "[" + newQuantity + "gr" + "]";
+    var quantityNumberLabel = newQuantity/1000 < 1? newQuantity : newQuantity/1000;
+    var unit = newQuantity/1000 < 1? "g" : "kg"
+    return name + "[" + quantityNumberLabel + unit + "]";
 }
   // #endregion
 
@@ -178,6 +230,22 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
     const oldValue = chosenRecipe.Broj_porcija;
     const percent = (newValue-oldValue)/Math.abs(oldValue) * 100;
     setPercentOfServings(percent);
+    var sum_KCAL = 0;
+    var sum_UH = 0;
+    var sum_PROTEINI = 0;
+    var sum_MASTI = 0;
+    groceriesForChosenRecipe.forEach((grocery) => {
+      var newQuantity = percent==0? grocery.Kolicina : (grocery.Kolicina*(percent+100))/100;
+
+      sum_KCAL += Math.round(grocery.kcal*newQuantity);
+      sum_UH += Math.round(grocery.UH*newQuantity);
+      sum_PROTEINI += Math.round(grocery.Proteini*newQuantity);
+      sum_MASTI += Math.round(grocery.Masti*newQuantity);
+    })
+    setSumKcal(sum_KCAL);
+    setSumUH(sum_UH);
+    setSumProteini(sum_PROTEINI);
+    setSumMasti(sum_MASTI);
   }
 
   const SaveWholeWeeklyMenu = () => {
@@ -264,7 +332,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
                       sx={{width: "100%"}}
                       className="buttonWithoutRadius"   
                       id={rowIndex*10 + columnIndex}
-                      onClick={()=>setIndexes(rowIndex, columnIndex)}                   
+                      onClick={()=>addMatrixField(rowIndex, columnIndex)}                   
                     >&nbsp;DODAJ&nbsp;</Button>}
                   </td>
                 ))}
@@ -286,16 +354,58 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
         renderInput={(params) => <TextField {...params} label="Recepti" />}
         />
               
-        <Stack direction="column" spacing={3} sx={{ width: 300, m: 5 }}>{chosenRecipe &&  <Typography>Ukupno:<Input
+        <Stack direction="column" spacing={3} sx={{ width: 300, m: 5 }}>{chosenRecipe &&  <Box><Typography>Ukupno:<Input
         edge="end"
         aria-label="comments"
         name="numberOfServings"
         type="number"
         value={numberOfServings}
+        sx={{width: "50%", ml: 2}}
         onChange={(event) => calculatePercent(event)}
         inputProps={{ min: 1, max: 50, step: "1" }}
         endAdornment={<InputAdornment position="end">Porcija</InputAdornment>}
-        /></Typography>}
+        /></Typography>
+        <Typography>Kalorija:<Input
+        edge="end"
+        aria-label="comments"
+        name="sumKcal"
+        type="number"
+        value={sumKcal}
+        disabled
+        sx={{width: "50%", ml: 2}}
+        endAdornment={<InputAdornment position="end">kcal</InputAdornment>}
+        /></Typography>
+        <Typography>Ugljenih hidrata:<Input
+        edge="end"
+        aria-label="comments"
+        name="sumUH"
+        type="number"
+        value={sumUH}
+        disabled
+        sx={{width: "50%", ml: 2}}
+        endAdornment={<InputAdornment position="end">g</InputAdornment>}
+        /></Typography>
+        <Typography>Proteina:<Input
+        edge="end"
+        aria-label="comments"
+        name="sumProteini"
+        type="number"
+        value={sumProteini}
+        disabled
+        sx={{width: "50%", ml: 2}}
+        endAdornment={<InputAdornment position="end">g</InputAdornment>}
+        /></Typography>
+        <Typography>Masti:<Input
+        edge="end"
+        aria-label="comments"
+        name="sumMasti"
+        type="number"
+        value={sumMasti}
+        disabled
+        sx={{width: "50%", ml: 2}}
+        endAdornment={<InputAdornment position="end">g</InputAdornment>}
+        /></Typography>
+        </Box>}
         <Button onClick={saveARecipeForASpecificMeal} className='swing-in-top-fwd' sx={{ width: 300 }} variant="contained" component="label">Sacuvaj</Button></Stack></Stack>
         {chosenRecipe &&
         <Card className='swing-in-top-fwd' sx={{ width: 530, height: 470 }}>

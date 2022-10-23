@@ -69,7 +69,7 @@ export const NewRecipe = () => {
                 setSuccessState(true);
                 setPreviewSource(null);
                 setPageRecipe(1);
-                handleAllRight();
+                //handleAllRight();
                 setRecipeData(initialState);
             })
             .catch((error) => console.log(error));
@@ -100,7 +100,7 @@ export const NewRecipe = () => {
         uploadImage(jsonObj)
           .then(result=>{            
                 setRecipeData({...recipeData, Cloudinary_public_id: result.public_id, Slika: result.secure_url, Niz_namirnica: right});
-          })
+            })
           .catch(e=>console.log(e));
     }
 
@@ -110,6 +110,24 @@ export const NewRecipe = () => {
         {
             dispatch(addRecipe(recipeData));
             setErrorState(false);
+            getAllGroceries()
+                .then(data=>{
+                    setGroceries(data.map(oneGrocery=>{
+                    let currentGrocery = createModelForGrocery(oneGrocery.id, oneGrocery.Naziv, oneGrocery.kcal, oneGrocery.UH, oneGrocery.Proteini, oneGrocery.Masti, oneGrocery.Kategorija, oneGrocery.Slika, 1);
+                    return currentGrocery; 
+                    }));
+                    var startIndex = 0;
+                    var endIndex = 10;
+                                    
+                    setChecked([]);
+                    setRight([]); 
+                    setLeft(data.slice([startIndex], [endIndex]).map(oneGrocery=>{
+                    let currentGrocery = createModelForGrocery(oneGrocery.id, oneGrocery.Naziv, oneGrocery.kcal, oneGrocery.UH, oneGrocery.Proteini, oneGrocery.Masti, oneGrocery.Kategorija, oneGrocery.Slika, 1);
+                    return currentGrocery; 
+                    }));
+                    
+                })
+                .catch(e=>console.log(e));
         }
       }, [recipeData.Cloudinary_public_id]) //dodaj navigate
     // #endregion
@@ -261,7 +279,7 @@ export const NewRecipe = () => {
                                 value={value.Kolicina}
                                 onChange={(e)=>onChangeQuantity(e, value.id)}
                                 inputProps={{ min: 1, max: 50, step: "1" }}
-                                endAdornment={<InputAdornment position="end">kg</InputAdornment>}
+                                endAdornment={<InputAdornment position="end">[{ value.Kolicina*100/1000 < 1? value.Kolicina*100 : value.Kolicina*100/1000 } {value.Kolicina*100/1000 < 1? "g": "kg"}]</InputAdornment>}
                             />}</Box>
                         }
                         disablePadding
@@ -337,7 +355,7 @@ export const NewRecipe = () => {
                                     sx={{ my: 0.5 }}
                                     variant="outlined"
                                     size="small"
-                                    onClick={handleAllRight}
+                                    onClick={() => handleAllRight()}
                                     disabled={left.length === 0}
                                 >
                                     <Typography color={left.length===0?"none":"black"}> &gt;&gt; </Typography>
