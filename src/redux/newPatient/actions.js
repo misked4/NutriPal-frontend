@@ -25,6 +25,9 @@ const doneCreatingNewPatient = (userData) => ({
     type: types.DONE_ADDING_NEW_PATIENT,
     payload: userData
 })
+const returnToInitialValues = () => ({
+    type: types.RETURN_TO_INITIAL_VALUES
+})
 const addPublicIdAndSecureUrl = (informations) => ({
     type: types.IMAGE_UPLOAD,
     payload: informations

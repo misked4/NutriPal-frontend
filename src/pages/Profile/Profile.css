@@ -1,0 +1,488 @@
+
+.dummy_nav{
+    background-color: #000000;
+    text-align: center;
+    color: #ededed;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.main-content-container{
+    display: flex;
+    flex-direction: row;
+}
+.sidebar1{
+    flex: .5;
+    background-color: #684c24;
+    height: 100vmax;
+}
+
+.middle-content{
+    display: flex;
+    flex: 3;
+    background-color: #b39061;
+}
+.sidebar2{
+    background-repeat: no-repeat;
+    background-size: cover;
+    flex: .5;
+    height: 100vmax;
+    background-color: #000000;
+    color: #ededed;
+    padding: 1%
+}
+
+.s2_title{
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.options-list{
+    display: flex;
+    justify-content: flex-start;
+    flex:.5
+}
+
+.profile-options{
+    display: block;
+    list-style: none;
+    margin: 5% 3%;
+    background-color: transparent;
+    padding: 5px;
+    border-radius: 10px ;
+}
+
+.profile-options .option-title{
+    background-color: #866c49;
+    color: #ededed;
+    padding:5%;
+    border: none;
+    border-radius: 10px ;
+    margin-bottom: 5%;
+    cursor: pointer;
+    transition: all .3s;
+    box-shadow: 0px 0px 4px 1px rgba(186,186,186,1);
+}
+
+.profile-options li:hover{
+    background-color: #362813;
+    color: #ededed;
+    transform: translateX(20px);
+    
+}
+
+.option-title{
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.option-desc{
+    font-size: .8em;
+    font-weight: 100;
+}
+
+.optionActive{
+    background-color: #362813 !important;
+    color: #ededed;
+    border: 3px solid #ededed !important;
+    transform: translateX(20px);
+    cursor:default !important;
+}
+
+.profile-data{
+    display:flex;
+    flex-direction: column;
+    flex: 1;
+    margin: 5% 3%;
+    transition: all 1s;
+}
+
+
+.image-container{
+    width: 90px;
+    height: 90px;
+    position: relative;
+}
+
+.profile-picture{
+    width: 90px;
+    height: 90px;
+    background-color: #ededed;
+    border-radius: 50px;
+}
+
+
+.img-change-overlay{
+    position: absolute;
+    top:0;
+    left: 0;
+    right:0;
+    bottom:0;
+    width: 90px;
+    height: 90px;
+    background-color: rgba(0, 0, 0, 0.45);
+    color: #ededed;
+    border-radius: 50px;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.overlay-txt{
+    color: #ededed;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.image-container:hover .img-change-overlay{
+    opacity: 1;
+}
+
+.user-main-info{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    background-color: #866c49;
+    padding: 5%;
+    box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.75);
+}
+
+.main-info{
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.btn-change-lg{
+    border: none;
+    color: #ededed;
+    border-radius: 10px;
+    width: 20%;
+    height: 30px;
+    background-color: #684c24;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all .5s;
+    
+}
+
+.btn-change-lg:hover{
+    background-color: #362813;
+    transform: scale(1.05, 1.05);
+}
+.user-info-all{
+    margin-top: 5%;
+    width: 100%;
+    background-color: #866c49;
+    box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.75);
+    padding: 4%;
+}
+
+.welcome-txt{
+    width:100%;
+    display: flex;
+    justify-content: center;
+}
+.achivments-title{
+    font-size: 1.5em;
+    font-weight: 800;
+    font-family: 'Bebas Neue', cursive;
+    color:#362813;
+}
+
+.chronology-title, .chronology-results{
+    display: flex;
+    justify-content: center;
+    margin-top: 10%;
+}
+
+.chronology-results{
+    margin-top:0;
+}
+
+
+.kg-title, .diet-info-title{
+    width: 30%;
+    color: #ededed;
+    background-color:#684c24; 
+    border-bottom: 2px solid #362813;
+    padding: 2% 5%;
+    text-align: center;
+}
+
+.kg-title span{
+    font-size: 1.5em;
+    font-family: 'Bebas Neue', cursive;
+}
+
+.kg-value, .diet-info-val{
+    background-color: #ededed;
+    color: #362813;
+    text-align: center;
+    padding: 5% 5%;
+    width: 30%;
+}
+
+.kg-value span{
+    font-size: 1.6em;
+    font-family: 'Poppins', sans-serif;
+}
+
+.summary-title, .summary-value{
+    display: flex;
+    justify-content: space-around;
+    margin-top: 5%;
+}
+
+.summary-value{
+    margin-top: 0;
+}
+
+.diet-info-title, .diet-info-val{
+    width: 40%;
+}
+
+.diet-info-title span{
+    font-size: 1.3em;
+    font-family: 'Bebas Neue', cursive;
+}
+
+.diet-info-val span{
+    font-size: 1.2em;
+}
+
+/* PROFIL */
+
+.profile-settings{
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin: 5% 3%;
+}
+
+.user-data{
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container{
+    box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.75);
+    padding: 4%;
+}
+
+.form-container .title{
+    font-size: 1.5em;
+    font-family: 'Bebas Neue', cursive;
+    font-weight: 500;
+    position: relative;
+}
+
+.form-container .form-text{
+    margin-top: 20px;
+}
+.form-container .title::before{
+    content: '';
+    position: absolute;
+    left:0;
+    bottom: 0;
+    height: 3px;
+    width: 30px;
+    background-color: #362813;
+}
+
+.form-container{
+    margin-top: 5%;
+    width: inherit;
+    background-color: #866c49;
+    padding: 25 30px;
+}
+
+.form-container form .user-details{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 20px 0 12px 0;
+}
+
+form .user-details .input-box{
+    margin-bottom: 15px;
+    width: calc(100% / 2 - 20px);
+    
+}
+
+.user-details .input-box .details{
+    font-family: 'Poppins', sans-serif;
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+
+}
+.user-details .input-box input,
+.user-details .input-box select,
+.user-details .input-box option{
+    font-family: 'Poppins', sans-serif;
+    height: 45px;
+    width: 100%;
+    outline: none;
+    border-radius: 5px;
+    border: 1px solid #362813;
+    padding-left: 15px;
+    font-size: 1em;
+    border-bottom-width: 2px;
+    transition: all 0.5s ease;
+}
+
+.user-details .input-box input:focus,
+.user-details .input-box input:valid{
+    	border-color: #b39061;
+}
+
+.gender{
+    font-family: 'Poppins', sans-serif;
+}
+
+form .gender-details .gender-title{
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5em;
+    font-weight: 500;
+}
+
+form .gender-details .category{
+    display: flex;
+    width: 80%;
+    justify-content: space-between;
+    margin: 14px 0;
+}
+
+.gender-details .category label{
+    display: flex;
+    align-items: center;
+}
+
+.gender-details .category .dot{
+    height: 18px;
+    width: 18px;
+    background: #d9d9d9;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 5px solid transparent;
+    transition: all .5s ease;
+}
+
+#dot-1:checked ~ .category label .one,
+#dot-2:checked ~ .category label .two{
+    border-color: #d9d9d9;
+    background-color: #362813;
+}
+
+form input[type='radio']{
+    display: none;
+}
+
+form input:disabled,
+form select:disabled{
+    background-color: #362813;
+}
+
+
+form .update-button,
+form .pwu{
+    height: 45px;
+    margin: 45px 0;
+}
+
+form .update-button input,
+form .pwu input{
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    letter-spacing: 1px;
+    height: 100%;
+    width: 100%;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    color: #ededed;
+    background-color: #684c24;
+    transition: all .5s ease;
+    cursor: pointer;
+}
+
+form .update-button input:hover,
+form .pwu input:hover{
+    background-color: #362813;
+}
+
+.additional{
+    margin-top: 40px;
+}
+
+.security-settings{
+    background-color: transparent;
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    margin: 5% 3%;
+}
+
+.password-change{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+form .pwu{
+    display: block;
+    width: calc(100% / 2 - 20px);
+    margin: 0 auto;
+}
+
+
+@media(max-width: 700px){
+    .profile-data,
+    .profile-settings{
+        display: flex;
+        flex: 100%;
+    }
+
+    .security-settings{
+        flex: 100%;
+    }
+
+    form .pwu{
+        display: block;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .profile-options{
+        display:none;
+    }
+    .form-container{
+        max-width: 100%;
+    }
+
+    form .user-details .input-box{
+        margin-bottom: 15px;
+        width: 100%;
+    }
+    
+    form .gender-details .category{
+        width: 100%;
+    }
+
+    .form-container form .user-details{
+        max-height: 300px;
+        overflow-y: scroll;
+    }
+
+    .user-details::-webkit-scrollbar{
+        width: 0;
+    }
+}

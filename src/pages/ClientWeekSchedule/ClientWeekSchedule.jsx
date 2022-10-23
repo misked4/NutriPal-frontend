@@ -23,7 +23,7 @@ export const ClientWeekSchedule = () => {
     const generatePdf = () => {
         var element = document.getElementById("element");
         html2pdf(element, {
-        margin:       10,
+        margin:       2,
         filename:     'Moj_nedeljni_plan_ishrane.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, logging: true, dpi: 192, letterRendering: true },

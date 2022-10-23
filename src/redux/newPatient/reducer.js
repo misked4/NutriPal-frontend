@@ -44,8 +44,10 @@ const newPatientReducers = (state = initialState, action) => {
         }
         case types.DONE_ADDING_NEW_PATIENT:
         return{
-            ...state,
-            createdUser: action.payload
+            state: initialState,
+            createdUser: action.payload,
+            page: "4",
+            loading: false
         }
         case types.IMAGE_UPLOAD:
             return{

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Button, InputLabel, MenuItem, Select, FormHelperText, FormControl, TextField, 
   Card, CardMedia, CardContent, CardActions, IconButton, Input, InputAdornment, Chip, Avatar } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -15,7 +16,11 @@ const n = 7;
 const m = 8;
 export const NewFoodSchedule = ({ personOnADietPlan }) => {
   const { user } = useSelector((state) => state.auth);
+  const { page } = useSelector((state) => state.newPatient); //ovo nam je potrebno da bi videli da li menjamo neciji jelovnik preko
+  //profila ili ne
+
   let dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [success, setSuccess] = useState(false);
   const [matrix, setMatrix] = useState(Array.from({length: n},()=> Array.from({length: m}, () => null)));
@@ -193,13 +198,18 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
     postWeeklyMenu(fullData)
           .then(result=>console.log(result))
           .catch(e=>console.log(e));
-    
-    setPageRecipe(1);
+    if(thisIsForNutritionist)
+      setPageRecipe(1);
     setSuccess(true);
-    if(!thisIsForNutritionist)
+    if(!thisIsForNutritionist && page === "4")
     {
-      dispatch(changePage("5"));
+      navigate('/myclients');
+      dispatch(changePage("1"));
     }
+  }
+  
+  const ReturnToFirstPage = () => {
+    setPageRecipe(1);
   }
 
   return (
@@ -273,6 +283,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
         </table>
       </div>
       {hiddenForm &&  <Button onClick={SaveWholeWeeklyMenu} sx={{mt: 3, ml:"78%"}} variant="contained" component="label">POTVRDI CEO NEDELJNI JELOVNIK</Button>}
+      {hiddenForm && thisIsForNutritionist && <Button onClick={ReturnToFirstPage} sx={{mt: 3, ml:"78%"}} variant="contained" component="label">VRATI SE NA PRETHODNU STRANU</Button>}
       {!hiddenForm && <Stack direction="row" spacing={2} sx={{m:5, ml: "20%"}} id="swingBox" className='swing-in-top-fwd'>
         <Stack direction="column" spacing={2}><Autocomplete
         disablePortal

@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, FormControl, FormHelperText, Input, InputAdornment, InputLabel, Button, Typography, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import { addBasicInfo, changePage, checkEmailAction, uploadImage } from '../../redux/newPatient/actions';
+import { checkEmailIfExist, uloadPhotoIfWeAlreadyDontHave } from './APIcalls';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import PasswordIcon from '@mui/icons-material/Password';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import DatePicker from 'react-date-picker';
 import { DescriptionAlertError } from '../../components/DescriptionAlerts';
+import { axios } from 'axios';
 
 export const BasicInfoComponent = () => {
   const { basicInfo } = useSelector((state) => state.newPatient);
@@ -15,24 +17,26 @@ export const BasicInfoComponent = () => {
   let dispatch = useDispatch();
 
   const initialStateBasicInfo = {
-      Ime: '' || basicInfo.Ime,
-      Prezime: '' || basicInfo.Prezime,
-      Email: '' || basicInfo.Email,
-      Lozinka: '' || basicInfo.Lozinka,
-      Lozinka2: '' || basicInfo.Lozinka2,
-      Datum_rodjenja: '2022-9-21' || basicInfo.Datum_rodjenja,
-      Uloga: 'Pacijent',
-      Telefon: '' || basicInfo.Telefon,
-      Adresa: '' || basicInfo.Adresa,
-      Slika: '' || basicInfo.Slika,
-      Pol: 'M' || basicInfo.Pol,
-      Cloudinary_public_id: null || basicInfo.Cloudinary_public_id,
-      Dodatne_info_Id: null || basicInfo.Dodatne_info_Id //ako je potrebno uhvati additionalInfo iz NewPatient
+      Ime: '' || (basicInfo && basicInfo.Ime),
+      Prezime: '' || (basicInfo && basicInfo.Prezime),
+      Email: '' || (basicInfo && basicInfo.Email),
+      Lozinka: '' || (basicInfo && basicInfo.Lozinka),
+      Lozinka2: '' || (basicInfo && basicInfo.Lozinka2),
+      Datum_rodjenja: '2022-9-21' || (basicInfo && basicInfo.Datum_rodjenja),
+      Uloga: 'Korisnik',
+      Telefon: '' || (basicInfo && basicInfo.Telefon),
+      Adresa: '' || (basicInfo && basicInfo.Adresa),
+      Slika: '' || (basicInfo && basicInfo.Slika),
+      Pol: 'M' || (basicInfo && basicInfo.Pol),
+      Cloudinary_public_id: null || (basicInfo && basicInfo.Cloudinary_public_id),
+      Dodatne_info_Id: null || (basicInfo && basicInfo.Dodatne_info_Id) //ako je potrebno uhvati additionalInfo iz NewPatient
     }
     const [ basicInfoOfPatient, setBasicInfoOfPatient ] = useState(initialStateBasicInfo);
     const { Ime, Prezime, Email, Lozinka, Lozinka2, Telefon, Adresa, Slika, Pol, Cloudinary_public_id } = basicInfoOfPatient;
     const [ error, setError ] = useState("");
     const [ dateFromForm, setDateFromForm ] = useState(new Date());
+    const [ sideEffects, setSideEffects ] = useState(false);
+
 
     const handleChange = (prop) => (event) => {
       setBasicInfoOfPatient({ ...basicInfoOfPatient, [prop]: event.target.value });
@@ -46,67 +50,48 @@ export const BasicInfoComponent = () => {
       setBasicInfoOfPatient({ ...basicInfoOfPatient, Datum_rodjenja: dateString});
     }
 
-    // 1 function
     const onClickEvent = (e) => {
       e.preventDefault();
-      checkEverything();
-    }
-
-    // 2 function
-    const checkEmailEvent= () => {
-      dispatch(checkEmailAction(Email));
-    }
-
-    // 2 function, 3 function
-    const checkEverything = () => {
-      if(validEmail === undefined || validEmail === true)
-      { // 2 function
-        checkEmailEvent();
-      } // 3 function
-      if(validEmail === false)
-      {
-        if(!previewSource) {setError("Slika"); return;}
-        if(basicInfoOfPatient.Cloudinary_public_id)
-        { // 3 function
-          addBasicInfoFunction();
-        }
-        else{uploadImageFunction(previewSource);}
-      }
-    }
-
-    // 4 function
-    const addBasicInfoFunction = () => {
-      if(basicInfoOfPatient.Ime && basicInfoOfPatient.Prezime && basicInfoOfPatient.Email && basicInfoOfPatient.Lozinka && 
-        basicInfoOfPatient.Lozinka2 && basicInfoOfPatient.Datum_rodjenja && basicInfoOfPatient.Telefon && basicInfoOfPatient.Adresa && basicInfoOfPatient.Slika)
-      {
-        if(basicInfoOfPatient.Lozinka === basicInfoOfPatient.Lozinka2)
-        {
-          setError("");
-          dispatch(addBasicInfo(basicInfoOfPatient));
-          dispatch(changePage("2"));
-        }
-        else setError("Lozinka");
-      }
-    }
-
-    // 3 function
-    useEffect(()=>{
-      if(basicInfo.Email === undefined)
-      {
-        if(validEmail === true)
-        {
-          setError("Email");
-        }
-        else {
-          if(validEmail === false && Email !== undefined)
-          { //3 function
-            checkEverything();
+      console.log("1 function, email check");
+      checkEmailIfExist(Email)
+        .then(result=>{console.log("result"); setError("Email");})
+        .catch(e=>{
+          setBasicInfoOfPatient({ ...basicInfoOfPatient, Email: Email});
+          if(!previewSource) {setError("Slika"); return;}
+          else{
+            console.log(basicInfo);
+            if(basicInfo.Slika && basicInfo.Slika === previewSource){
+              setSideEffects(true);
+              console.log(basicInfoOfPatient);
+              console.log('we have basicInfo and same SLIKA');
+            }
+            else {
+              console.log('we have basicInfo but not same SLIKA');
+              uploadImageFunction(previewSource);
+              //unutar ove fje ima setSideEffects(true);
+            }
           }
-          if(validEmail === undefined)
-            setBasicInfoOfPatient({ ...basicInfoOfPatient, Email: ''});
-        }
+        });
+    }
+
+    useEffect(() => {
+      if(basicInfo && basicInfo.Email)
+      {
+        console.log('we have basicInfo');
+        setBasicInfoOfPatient(basicInfo);
+        setPreviewSource(basicInfo.Slika);
+        //setSideEffects(false);
       }
-    },[validEmail]);
+      else console.log('we DONT have basicInfo');
+    },[]);
+
+    useEffect(() => {
+      if(sideEffects === true)
+        {
+          addBasicInfoFunction();
+          setSideEffects(false);
+        }
+    },[sideEffects])
 
     // #region uploadFile
     const [previewSource, setPreviewSource] = useState();
@@ -129,22 +114,30 @@ export const BasicInfoComponent = () => {
         data: base64EncodedImage
       });
       const jsonObj = JSON.parse(body);
-      dispatch(uploadImage(jsonObj));
-      //console.log(basicInfo);
-
+      uloadPhotoIfWeAlreadyDontHave(jsonObj)
+        .then((resp) => {
+          setBasicInfoOfPatient({ ...basicInfoOfPatient, Cloudinary_public_id: resp.data.public_id, Slika: resp.data.secure_url});
+          setSideEffects(true);
+      })
+        .catch((error) => console.log(error));
+        //console.log(basicInfo);
     }
-
-    useEffect(()=>{
-      if(basicInfo.Cloudinary_public_id && !basicInfoOfPatient.Cloudinary_public_id)
-      {
-        setBasicInfoOfPatient({ ...basicInfoOfPatient, Cloudinary_public_id: basicInfo.Cloudinary_public_id, Slika: basicInfo.Slika });
-      }
-      if(basicInfoOfPatient.Cloudinary_public_id)
-      {
-        addBasicInfoFunction();
-      }      
-    }, [basicInfo.Cloudinary_public_id, basicInfoOfPatient.Cloudinary_public_id])
     // #endregion
+
+
+    const addBasicInfoFunction = () => {
+      if(basicInfoOfPatient.Ime && basicInfoOfPatient.Prezime && basicInfoOfPatient.Email && basicInfoOfPatient.Lozinka && 
+        basicInfoOfPatient.Lozinka2 && basicInfoOfPatient.Datum_rodjenja && basicInfoOfPatient.Telefon && basicInfoOfPatient.Adresa && basicInfoOfPatient.Slika)
+      {
+        if(basicInfoOfPatient.Lozinka === basicInfoOfPatient.Lozinka2)
+        {
+          setError("");
+          dispatch(addBasicInfo(basicInfoOfPatient));
+          dispatch(changePage("2"));
+        }
+        else setError("Lozinka");
+      }
+    }
 
     return (
     <Box >
@@ -190,7 +183,7 @@ export const BasicInfoComponent = () => {
             inputProps={{ maxLength: 100 }}
             value={Email}
             onChange={handleChange('Email')}
-            disabled = {basicInfo.Email ? true : false}
+            disabled = {basicInfo && basicInfo.Email ? true : false}
             endAdornment={Email ? <InputAdornment position="end">Email</InputAdornment> : <InputAdornment position="end">Niste uneli Email <WarningAmberOutlinedIcon/></InputAdornment>}
             startAdornment= {
               <InputAdornment position="start">
@@ -279,7 +272,7 @@ export const BasicInfoComponent = () => {
                                   }}
                                   src={previewSource}
                                 />)}
-        <Button sx={{ m: 1.5, mt: 3 }} onClick={onClickEvent}>Zapamti</Button>
+        <Button sx={{ m: 1.5, mt: 3 }} onClick={(e) => onClickEvent(e)}>Zapamti</Button>
         <Button
           variant="contained"
           component="label"
@@ -295,3 +288,12 @@ export const BasicInfoComponent = () => {
     </Box>
   )
 }
+/**        <FormControl variant="standard" sx={{ m: 1.5, mt: 3, width: '35ch' }}>
+          <Input
+            inputProps={{ maxLength: 100 }}
+            value={Lozinka2}
+            onChange={handleChange('Lozinka2')}
+            endAdornment={Lozinka2 ? <InputAdornment position="end">Potvrda</InputAdornment> : <InputAdornment position="end">Niste potvrdili Lozinku <WarningAmberOutlinedIcon/></InputAdornment>}
+          />
+          <FormHelperText>confirm password</FormHelperText>
+        </FormControl> */

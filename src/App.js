@@ -22,6 +22,7 @@ import { NewDiet } from './pages/Diet/NewDiet';
 import { NewRecipe } from './pages/Recipe/NewRecipe';
 import './App.css'
 import { ClientWeekSchedule } from './pages/ClientWeekSchedule/ClientWeekSchedule';
+import { Profile } from './pages/Profile/Profile';
 
 function App() {
   const [mode, setMode] = useState("light");
@@ -100,6 +101,7 @@ function App() {
               {nutritionRole && <Route path={"/newfoodschedule"} element={<NewFoodSchedule personOnADietPlan={userForWeeklyPlan[0]} />}/>}
               {adminRole && <Route path={"/newdiet"} element={<NewDiet/>}/>}
               <Route path={"/mufoodschedule"} element={<ClientWeekSchedule/>}/>
+              <Route path={"/profile"} element={<Profile person={userForWeeklyPlan[0]}/>}/>
 
               <Route path={"/achievements"} element={<Achievements/>}/>
               <Route path={"/settings"} element={<Settings/>} />

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { AppBar, Box, Toolbar, Badge, InputBase, Typography, styled, Avatar, Menu, MenuItem, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { AppBar, Box, Toolbar, Badge, InputBase, Typography, styled,
+  Avatar, Menu, MenuItem, Button, Dialog, DialogTitle, DialogContent, DialogActions,
+  Autocomplete, TextField, FormControl, InputLabel, Select, Slide } from '@mui/material';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
 import EmailIcon from '@mui/icons-material/Email';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -22,27 +24,24 @@ import { logout, reset } from '../pages/Entry/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { returnUnseenLikes, getRecipe, setSeenAllNotifications } from '../pages/Recipe/APIcalls';
 import { Stack } from '@mui/system';
+import { hideRightBar, unhiddenRightBar } from './../redux/rightbar/actions';
+import { loadPatientsAction, searchPatientsAction } from './../redux/patients/actions';
+import { Profile } from './../pages/Profile/Profile';
  
-function changeHeightVmax() {
-  document.getElementsByClassName("myDiv")[0].style.height = "100vmax";
-  window.scrollTo(0, 0);
-}
-function changeHeightToPercentage() {
-  document.getElementsByClassName("myDiv")[0].style.height = "100%";
-  window.scrollTo(0, 0);
-}
-
 const Navbar = () => {
+  const [openFullDialogForProfile, setOpenFullDialogForProfile] = useState(false);
   const [openProfileInfo, setOpenProfileInfo] = useState(false);
   const [openNotificationsInfo, setOpenNotificationsInfo] = useState(false);
   const [currentOpenedRecipe, setCurrentOpenedRecipe] = useState({});
   const [unseen, setUnseen] = useState(true);
   //notifications is get by returnUnseenLikedRecipesQuery.sql file, so he defined what field we have in json
-  const [notifications, setNotifications] = useState([]); 
+  const [notifications, setNotifications] = useState([]);
+  const [selectedUserProfile, setSelectedUserProfile] = useState('');
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const { users } = useSelector(state => state.patients);
 
   const onLogout = () => {
     console.log("LOGOUT");
@@ -50,6 +49,11 @@ const Navbar = () => {
     dispatch(reset());
     navigate('/');
     window.location.reload(false);
+  }
+
+  const goToMyProfilePage = () => {
+    closeRightbar();
+    navigate('/profile');
   }
 
   const [openNotifications, setOpenNotifications] = useState(false);
@@ -81,6 +85,7 @@ const Navbar = () => {
   };
 
   useEffect(()=>{
+    dispatch(loadPatientsAction(user[0].id));
     returnUnseenLikes(user[0].id)
       .then(data=>{
           setNotifications(data);
@@ -103,6 +108,33 @@ const Navbar = () => {
     changeHeightVmax();
   }
 
+  const closeRightbar = () => {
+    setTimeout(function(){
+      dispatch(hideRightBar());
+    }, 1200);
+    var element = document.getElementById('swingRight');
+    if (element && element.classList.contains('slide-in-right')) {
+      element.classList.remove('slide-in-right');      
+      element.classList.add('slide-out-right');
+    }
+  }
+
+  // #region select user profile
+  const handleChangeSelect = (event) => {
+    setSelectedUserProfile(event.target.value);
+    enterFullDialogProfile();
+  };
+
+  const enterFullDialogProfile = () => {
+    setOpenFullDialogForProfile(true);
+  };
+
+  const closeFullDialogProfile = () => {
+    dispatch(loadPatientsAction(user[0].id));
+    setOpenFullDialogForProfile(false);
+  };
+  // #endregion
+  
   const menuItemNotification = notifications.length === 0 ?
     <StyledToolbar>
       <HeartBrokenIcon/>
@@ -110,7 +142,7 @@ const Navbar = () => {
     </StyledToolbar>
     : notifications.map((notification, i) => {
     return <StyledToolbar key={notification.receptId}>
-              <FavoriteIcon/>
+              <FavoriteIcon sx={{color: "#ff0000"}}/>
                 <MenuItem key={notification.receptId} onClick={()=>handleClickOpen(notification.receptId)} sx={{display:{xs:"block",sm:"flex"}}}>
                   <Typography sx={{fontStyle: 'italic',fontWeight: 'bold'}}>{notification.Ime} {notification.Prezime} </Typography>
                   <Typography> &nbsp; {"Vam je lajkovao recept sa nazivom"} &nbsp; </Typography>
@@ -131,9 +163,25 @@ const Navbar = () => {
           <NewspaperIcon onClick={navigateToNews} />
           <EventNoteOutlinedIcon onClick={navigateToMyFoodSchedule}/>
         </UserBoxForMobile>
-        <Search>
-          <InputBase placeholder="search..."></InputBase>
-        </Search>
+        {user[0].Uloga==="Nutricionista" && <FormControl sx={{ m: 1, minWidth: 80, width: "40%",  backgroundColor: "white", borderRadius: '16px' }}>
+          <InputLabel id="demo-simple-select-autowidth-label" sx={{ width: "40%" }}>Vidite profil nekog korisnika</InputLabel>
+            <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              value={selectedUserProfile}
+              onChange={handleChangeSelect}
+              autoWidth
+              label="Vidite profil nekog korisnika"
+              sx={{ width: "100%", borderRadius: '16px' }}
+            >
+                <MenuItem value="" sx={{ width: "100%" }}>
+                  <em>None</em>
+                </MenuItem>
+                {users.map((oneUser) => (
+                  <MenuItem key={oneUser.id} value={oneUser} sx={{ width: "100%" }}>{oneUser.Ime} {oneUser.Prezime}</MenuItem>
+                ))}
+            </Select>
+        </FormControl>}
         <UserBoxForDesktop>
           
           <Badge badgeContent={unseen && notifications.length} color="error" onClick={e=>setOpenNotificationsInfo(true)} max={999}>
@@ -166,7 +214,7 @@ const Navbar = () => {
           horizontal: 'right',
         }}
       >
-        <StyledToolbar><AccountCircleIcon /><MenuItem>Moj profil</MenuItem></StyledToolbar>
+        <StyledToolbar><AccountCircleIcon /><MenuItem onClick={goToMyProfilePage}>Moj profil</MenuItem></StyledToolbar>
         <StyledToolbar><SendOutlinedIcon/><MenuItem>Moje objave</MenuItem></StyledToolbar>
         <StyledToolbar><AssignmentIcon/><MenuItem>Info o licenci</MenuItem></StyledToolbar>
         <StyledToolbar><LogoutIcon/><MenuItem onClick={onLogout}>Odjavi se</MenuItem></StyledToolbar>
@@ -201,6 +249,26 @@ const Navbar = () => {
             </Button>
           </DialogActions>
         </Dialog>}
+        <Dialog
+        fullScreen
+        open={openFullDialogForProfile}
+        onClose={closeFullDialogProfile}
+        TransitionComponent={Transition}
+        >
+        <AppBar sx={{ position: 'relative' }}>
+          <Toolbar>
+            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+              NutriPal
+            </Typography>
+            <Button autoFocus color="inherit" onClick={closeFullDialogProfile}>
+              Zatvori
+            </Button>
+          </Toolbar>
+        </AppBar>
+        <Box backgroundColor="#E1C391">
+          <Profile person={selectedUserProfile}/>
+        </Box>
+      </Dialog>
     </AppBar>
   );
 };
@@ -236,6 +304,19 @@ const UserBoxForMobile = styled(Box)(({theme}) => ({
     display: "none"
   }
 }));
+
+function changeHeightVmax() {
+  document.getElementsByClassName("myDiv")[0].style.height = "100vmax";
+  window.scrollTo(0, 0);
+}
+function changeHeightToPercentage() {
+  document.getElementsByClassName("myDiv")[0].style.height = "100%";
+  window.scrollTo(0, 0);
+}
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 
 export default Navbar;
 //position=stic, iako skrolujemo ostaje na poziciji

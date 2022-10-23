@@ -35,7 +35,7 @@ export const searchPatientsAction = (creatorId, searchWord) => {
         axios
         .post(`${process.env.REACT_APP_API}/patients/${creatorId}?search=${searchWord}`)
         .then((resp) => {
-            console.log("resResponse from searchPatientsAction",resp);
+            //console.log("resResponse from searchPatientsAction",resp);
             dispatch(getUsers(resp.data));
         })
         .catch((error) => console.log(error));
