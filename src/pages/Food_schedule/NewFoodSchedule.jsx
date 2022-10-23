@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Button, InputLabel, MenuItem, Select, FormHelperText, FormControl, TextField, 
   Card, CardMedia, CardContent, CardActions, IconButton, Input, InputAdornment, Chip, Avatar } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import ReportIcon from '@mui/icons-material/Report';
 import { Stack } from '@mui/system';
 import NextPlanIcon from '@mui/icons-material/NextPlan';
-import { getAllRecipesForNutri, getRecipeWithHisGroceries, postWeeklyMenu, getWeeklyMenu, getAdditionalInfoForPatient } from './APIcalls';
+import { getAllRecipesForNutri, getRecipeWithHisGroceries, postWeeklyMenu, 
+  getWeeklyMenu, getAdditionalInfoForPatient, getDiet } from './APIcalls';
 import { DescriptionAlertError, DescriptionAlertSuccess } from '../../components/DescriptionAlerts';
 import { changePage } from '../../redux/newPatient/actions';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -14,6 +16,7 @@ import './NewFoodSchedule.css'
 
 const n = 7;
 const m = 8;
+const k = 5;
 export const NewFoodSchedule = ({ personOnADietPlan }) => {
   const { user } = useSelector((state) => state.auth);
   const { page } = useSelector((state) => state.newPatient); //ovo nam je potrebno da bi videli da li menjamo neciji jelovnik preko
@@ -33,6 +36,11 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
   const [chosenRecipe, setChosenRecipe] = useState(null);
   const [groceriesForChosenRecipe, setGroceriesForChosenRecipe] = useState([]);
   const [numberOfServings, setNumberOfServings] = useState(1);
+
+  const [statusMatrix, setStatusMatrix] = useState(Array.from({length: m},()=> Array.from({length: k}, () => null)));
+  const [formWithStatusMatrix, setFormWithStatusMatrix] = useState(false);
+  const [dietForPersonOnADietPlan, setDietForPersonOnADietPlan] = useState({});
+  const [arrayOfMinAndMaxValues, setArrayOfMinAndMaxValues] = useState([]);
 
   // #region additional fields
   const [sumKcal, setSumKcal] = useState(0);
@@ -63,6 +71,17 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
   }
 
   useEffect(()=>{
+    if(personOnADietPlan.Uloga === "Korisnik")
+    {
+      getDiet(personOnADietPlan.DijetaId)
+        .then(result=>{
+          setDietForPersonOnADietPlan(result);
+          setArrayOfMinAndMaxValues([{min: result.UH_min, max:result.UH_max},
+            {min: result.PROTEINI_min, max:result.PROTEINI_max}, 
+            {min: result.MASTI_min, max: result.MASTI_max}]);
+        })
+        .catch(e=>console.log(e));
+    }
     if(!thisIsForNutritionist)
     {
       setPageRecipe(2);
@@ -73,7 +92,6 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
         })
         .catch(e=>console.log(e));
     }
-    console.log(personOnADietPlan);
     getAllRecipesForNutri(user[0].id)
           .then(result=>setRecipes(result))
           .catch(e=>console.log(e));
@@ -100,6 +118,8 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
   };
 
   const addMatrixField = (rowIndex, columnIndex) => {
+    setFormWithStatusMatrix(false);
+
     setIndexOfRow(rowIndex);
     setIndexOfColumn(columnIndex);
     setHiddenForm(false);
@@ -112,6 +132,8 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
   }
 
   const updateMatrixField = (rowIndex, columnIndex) => {
+    setFormWithStatusMatrix(false);
+
     const recipeIdFromMatrix = matrix[rowIndex][columnIndex].chosenRecipe;
     const recipeForUpdate = recipes.find(x => x.id === recipeIdFromMatrix);
     const getNumberOfServings = matrix[rowIndex][columnIndex].numberOfServings; 
@@ -271,6 +293,94 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
     setPageRecipe(1);
   }
 
+  const calculateForOneRow = (column) => {
+    var result = {
+      sum_kcal: 0,      
+      sum_UH: 0,
+      sum_PROTEINI: 0,
+      sum_MASTI: 0
+    }
+    for(let i = 1; i<n; i++)
+    {
+      if(matrix[i][column] != null)
+      {        
+        result.sum_kcal += matrix[i][column].sum_kcal;
+        result.sum_UH += matrix[i][column].sum_UH;
+        result.sum_PROTEINI += matrix[i][column].sum_PROTEINI;
+        result.sum_MASTI += matrix[i][column].sum_MASTI;
+      }
+    }
+    return result;
+  }
+
+  const ShowStatusMatrix = () => {
+    console.log(arrayOfMinAndMaxValues);
+    var auxiliaryMatrix = [];
+    
+    for(let i=0; i<m; i++) {
+      auxiliaryMatrix[i] = new Array(k);
+    }
+
+    // #region initialMatrix
+    var kcal_recommended = kcalRecommended();
+
+    const UH_MinAndMax = "("+dietForPersonOnADietPlan.UH_min+"% - "+dietForPersonOnADietPlan.UH_max+"%)";
+    const PROTEINI_MinAndMax = "("+dietForPersonOnADietPlan.PROTEINI_min+"% - "+dietForPersonOnADietPlan.PROTEINI_max+"%)";
+    const MASTI_MinAndMax = "("+dietForPersonOnADietPlan.MASTI_min+"% - "+dietForPersonOnADietPlan.MASTI_max+"%)";
+    auxiliaryMatrix[0][0] = "";
+    auxiliaryMatrix[0][1] = "kcal (preporuceno: "+kcal_recommended+" kcal)";
+    auxiliaryMatrix[0][2] = "Ugljeni hidrati "+UH_MinAndMax;
+    auxiliaryMatrix[0][3] = "Proteini " +PROTEINI_MinAndMax;
+    auxiliaryMatrix[0][4] = "Masti" +MASTI_MinAndMax;
+    auxiliaryMatrix[1][0] = "Ponedeljak";
+    auxiliaryMatrix[2][0] = "Utorak";
+    auxiliaryMatrix[3][0] = "Sreda";
+    auxiliaryMatrix[4][0] = "Cetvrtak";
+    auxiliaryMatrix[5][0] = "Petak";
+    auxiliaryMatrix[6][0] = "Subota";
+    auxiliaryMatrix[7][0] = "Nedelja";
+    // #endregion
+
+    for(let i = 1; i<m; i++)
+    {
+        let result = calculateForOneRow(i);
+        if(result!=null)
+        {          
+          auxiliaryMatrix[i][1] = result.sum_kcal;
+
+          let sumAll3 = result.sum_UH;
+          sumAll3 += result.sum_PROTEINI;
+          sumAll3 += result.sum_MASTI;
+
+          auxiliaryMatrix[i][2] = Math.round(result.sum_UH / sumAll3 * 100);
+          auxiliaryMatrix[i][3] = Math.round(result.sum_PROTEINI / sumAll3 * 100);
+          auxiliaryMatrix[i][4] = Math.round(result.sum_MASTI / sumAll3 * 100);
+        }
+    }
+    console.log(auxiliaryMatrix);
+    setStatusMatrix(auxiliaryMatrix);
+    setFormWithStatusMatrix(true);
+  }
+
+  const kcalRecommended = () => {    
+    var kcal_recommended = "";
+    if(personOnADietPlan.Uloga === "Korisnik")
+    {
+      if(personOnADietPlan.Cilj_ishrane === "Smanjenje telesne mase")
+      {
+        kcal_recommended = Math.round(personOnADietPlan.TEE - personOnADietPlan.PotrosnjaKalorija);
+      }
+      else if(personOnADietPlan.Cilj_ishrane === "Zadržavanje telesne mase")
+      {
+        kcal_recommended = Math.round(personOnADietPlan.TEE + personOnADietPlan.PotrosnjaKalorija);
+      }
+      else if(personOnADietPlan.Cilj_ishrane === "Povecanje telesne mase"){
+        kcal_recommended = Math.round(personOnADietPlan.TEE + 2 * personOnADietPlan.PotrosnjaKalorija);
+      }
+    }    
+    return kcal_recommended;
+  }
+
   return (
     <Box flex={4} p={2}>
       {success && DescriptionAlertSuccess("Uspesno ste dodali nedeljni plan ishrane.")}
@@ -342,6 +452,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
         </table>
       </div>
       {hiddenForm &&  <Button onClick={SaveWholeWeeklyMenu} sx={{mt: 3, ml:"78%"}} variant="contained" component="label">POTVRDI CEO NEDELJNI JELOVNIK</Button>}
+      {hiddenForm && personOnADietPlan.Uloga === "Korisnik" && <Button onClick={ShowStatusMatrix} sx={{mt: 3, ml:"78%"}} variant="contained" component="label">VIDI NEDELJNI STATUS</Button>}
       {hiddenForm && thisIsForNutritionist && <Button onClick={ReturnToFirstPage} sx={{mt: 3, ml:"78%"}} variant="contained" component="label">VRATI SE NA PRETHODNU STRANU</Button>}
       {!hiddenForm && <Stack direction="row" spacing={2} sx={{m:5, ml: "20%"}} id="swingBox" className='swing-in-top-fwd'>
         <Stack direction="column" spacing={2}><Autocomplete
@@ -436,6 +547,46 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
             </Card>}
         </Stack>}
       </Box>}
+      {formWithStatusMatrix && personOnADietPlan.Uloga === "Korisnik" &&
+      <div className="sheet">
+        <table className="tableSchedule">
+          <tbody>
+            {statusMatrix.map((row, rowIndex) => (
+              rowIndex===0? <tr className="tableEl" key={rowIndex}>
+                <td className="tableEl" key='0'></td>
+                <td className="tableEl" key='1'><Typography align="center">{statusMatrix[rowIndex][1]}</Typography></td>
+                <td className="tableEl" key='2'><Typography align="center">{statusMatrix[rowIndex][2]}</Typography></td>
+                <td className="tableEl" key='3'><Typography align="center">{statusMatrix[rowIndex][3]}</Typography></td>
+                <td className="tableEl" key='4'><Typography align="center">{statusMatrix[rowIndex][4]}</Typography></td>
+              </tr> :
+              <tr className="tableEl" key={rowIndex}>
+                {row.map((column, columnIndex) => (
+                  rowIndex===1 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
+                  rowIndex===2 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
+                  rowIndex===3 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
+                  rowIndex===4 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
+                  rowIndex===5 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
+                  rowIndex===6 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
+                  rowIndex===7 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
+                  <td className="tableEl" key={rowIndex*10 + columnIndex}>
+                    {statusMatrix[rowIndex][columnIndex]?
+                    <Typography>
+                        {columnIndex > 1 ?
+                        (arrayOfMinAndMaxValues[columnIndex-2] && (arrayOfMinAndMaxValues[columnIndex-2].min > statusMatrix[rowIndex][columnIndex] ||
+                        arrayOfMinAndMaxValues[columnIndex-2].max < statusMatrix[rowIndex][columnIndex]))?
+                        <>{statusMatrix[rowIndex][columnIndex]}% <ReportIcon sx={{color:'red', mt:1, p:0, width:"5%", height:"5%" }}/></>
+                        : <>{statusMatrix[rowIndex][columnIndex]}%</>
+                        : statusMatrix[rowIndex][columnIndex] > kcalRecommended() ? <>{statusMatrix[rowIndex][columnIndex]} <ReportIcon sx={{color:'red', mt:1, p:0, width:"5%", height:"5%" }}/></>
+                        : <>{statusMatrix[rowIndex][columnIndex]}</>}
+                    </Typography>
+                    : <Typography>Nema tekst</Typography>}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>}
     </Box>
   );
 };

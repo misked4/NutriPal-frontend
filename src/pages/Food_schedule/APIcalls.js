@@ -24,3 +24,9 @@ export const getAdditionalInfoForPatient = async (id) => {
     const response = await axios.get(`${process.env.REACT_APP_API}/addinfo/${id}`);
     return response.data[0];
 }
+
+export const getDiet = async (dietId) => {
+    const response = await axios.get(`${process.env.REACT_APP_API}/diet/${dietId}`)
+    //console.log(response.data);
+    return response.data[0];
+}
