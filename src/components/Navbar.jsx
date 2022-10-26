@@ -161,7 +161,7 @@ const Navbar = () => {
     <AppBar position="sticky">
       <StyledToolbar>
         <Typography variant="h5" sx={{display:{xs:"none",sm:"block"}}}>
-          BuddyNut
+          NutriPal
         </Typography>
         <FastfoodIcon sx={{display:{xs:"none",sm:"block"}}}/>
         <UserBoxForMobile>

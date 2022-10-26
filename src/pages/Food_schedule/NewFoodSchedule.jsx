@@ -452,7 +452,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
         </table>
       </div>
       {hiddenForm &&  <Button onClick={SaveWholeWeeklyMenu} sx={{mt: 3, ml:"78%"}} variant="contained" component="label">POTVRDI CEO NEDELJNI JELOVNIK</Button>}
-      {hiddenForm && personOnADietPlan.Uloga === "Korisnik" && <Button onClick={ShowStatusMatrix} sx={{mt: 3, ml:"78%"}} variant="contained" component="label">VIDI NEDELJNI STATUS</Button>}
+      {hiddenForm && personOnADietPlan.Uloga === "Korisnik" && <Button onClick={ShowStatusMatrix} sx={{mt: 3, mb:3, ml:"78%"}} variant="contained" component="label">VIDI NEDELJNI STATUS</Button>}
       {hiddenForm && thisIsForNutritionist && <Button onClick={ReturnToFirstPage} sx={{mt: 3, ml:"78%"}} variant="contained" component="label">VRATI SE NA PRETHODNU STRANU</Button>}
       {!hiddenForm && <Stack direction="row" spacing={2} sx={{m:5, ml: "20%"}} id="swingBox" className='swing-in-top-fwd'>
         <Stack direction="column" spacing={2}><Autocomplete
@@ -540,7 +540,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
                   </IconButton>
                   <Box>
                   {groceriesForChosenRecipe.map(x=>
-                    <Chip label={generateLabelName(x)} sx={{m:0.5}} variant="outlined" color="primary" avatar={<Avatar src={x.Slika} alt="Nemamo sliku :(" />} />
+                    <Chip label={generateLabelName(x)} sx={{m:0.5}} variant="outlined" color="primary" avatar={<Avatar src={x.Slika} alt="X" />} />
                   ).slice(0,3)}</Box>
                   
                 </CardActions>
@@ -549,26 +549,26 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
       </Box>}
       {formWithStatusMatrix && personOnADietPlan.Uloga === "Korisnik" &&
       <div className="sheet">
-        <table className="tableSchedule">
+        <table className="tableStatus">
           <tbody>
             {statusMatrix.map((row, rowIndex) => (
-              rowIndex===0? <tr className="tableEl" key={rowIndex}>
-                <td className="tableEl" key='0'></td>
-                <td className="tableEl" key='1'><Typography align="center">{statusMatrix[rowIndex][1]}</Typography></td>
-                <td className="tableEl" key='2'><Typography align="center">{statusMatrix[rowIndex][2]}</Typography></td>
-                <td className="tableEl" key='3'><Typography align="center">{statusMatrix[rowIndex][3]}</Typography></td>
-                <td className="tableEl" key='4'><Typography align="center">{statusMatrix[rowIndex][4]}</Typography></td>
+              rowIndex===0? <tr className="teStatusFirstRow" key={rowIndex}>
+                <td className="energyValue" key='0'>Energetska vrednost korisnika</td>
+                <td className="teStatus" key='1'><Typography align="center">{statusMatrix[rowIndex][1]}</Typography></td>
+                <td className="teStatus" key='2'><Typography align="center">{statusMatrix[rowIndex][2]}</Typography></td>
+                <td className="teStatus" key='3'><Typography align="center">{statusMatrix[rowIndex][3]}</Typography></td>
+                <td className="teStatus" key='4'><Typography align="center">{statusMatrix[rowIndex][4]}</Typography></td>
               </tr> :
-              <tr className="tableEl" key={rowIndex}>
+              <tr className="teStatus" key={rowIndex}>
                 {row.map((column, columnIndex) => (
-                  rowIndex===1 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
-                  rowIndex===2 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
-                  rowIndex===3 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
-                  rowIndex===4 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
-                  rowIndex===5 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
-                  rowIndex===6 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
-                  rowIndex===7 && columnIndex===0? <td className="tableEl" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
-                  <td className="tableEl" key={rowIndex*10 + columnIndex}>
+                  rowIndex===1 && columnIndex===0? <td className="teStatusColumn" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
+                  rowIndex===2 && columnIndex===0? <td className="teStatusColumn" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
+                  rowIndex===3 && columnIndex===0? <td className="teStatusColumn" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
+                  rowIndex===4 && columnIndex===0? <td className="teStatusColumn" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
+                  rowIndex===5 && columnIndex===0? <td className="teStatusColumn" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
+                  rowIndex===6 && columnIndex===0? <td className="teStatusColumn" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
+                  rowIndex===7 && columnIndex===0? <td className="teStatusColumn" key={rowIndex*10 + columnIndex}><Typography align="center">{statusMatrix[rowIndex][columnIndex]}</Typography></td> :
+                  <td className="teStatus" key={rowIndex*10 + columnIndex}>
                     {statusMatrix[rowIndex][columnIndex]?
                     <Typography>
                         {columnIndex > 1 ?

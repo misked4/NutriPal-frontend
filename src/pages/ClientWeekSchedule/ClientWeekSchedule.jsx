@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Button, Divider, Typography } from '@mui/material';
+import { Box, Button, Divider, Typography, Avatar, Chip } from '@mui/material';
 import html2pdf from 'html2pdf.js';
 import { getAllDataForWeekSchedule, getAllDataForRecipe } from './APIcalls';
 import './ClientWeekSchedule.css';
@@ -97,11 +97,36 @@ export const ClientWeekSchedule = () => {
         return finalQuantity;
     }
   
+    const generateLabelName = (newValue, oldValueOfNumbersOfServings, grocery) => {
+        var name = "";
+        if(grocery.Naziv.length >= 40)
+            name = grocery.Naziv.slice(0, 40) + "...";
+        else name = grocery.Naziv.slice(0, 40) + " - ";
+        var quantityNumberLabel = calculateQuantity(newValue, oldValueOfNumbersOfServings, grocery.Kolicina);
+        var unit = grocery.Kolicina/1000 < 1? "g" : "kg"
+        return name + "[" + quantityNumberLabel + unit + "]";
+    }
 
     return (
         <Box flex={4} p={2} id="element">
+            <Stack direction="row" spacing={3}>
+                <img src="icons8-natural-food-bubbles-96.png" alt="Logo" width="96" height="96"/>
+                <div id="divBottom"><h1 id="bottom">NutriPal</h1></div>
+            </Stack>
+            <Divider sx={{bgcolor: "green"}}/>
         {allDataArrived && <div>
-            <Typography sx={{ fontStyle: 'Bold', mr:"25%", m:2 }} variant="h5">Vas izabrani nutricionista: {nutritionist.Ime} {nutritionist.Prezime}</Typography>
+            <Stack direction="column" spacing={1} className="textInfo" sx={{m:5}}>
+                <div className="textInfo">{user[0].Ime} {user[0].Prezime}</div>
+                <div>Starost: {sqlToJsDateAndCalcAge(user[0].Datum_rodjenja)}god</div>
+                <div>Visina: {user[0].Visina}cm</div>
+                <div>Tezina: {user[0].Tezina}kg</div>
+                <div>BMI(Bazalni metabolizam): {Math.round(user[0].BMI)}kcal</div>
+                <div>TEE:(Ukupna energetska potrošnja) {Math.round(user[0].TEE)}kcal</div>                
+                <div>BMI:(Indeks telesne mase) {Math.round(user[0].BMI)}kg<sup>2</sup></div>
+                <div>Vas izabrani nutricionista je: {nutritionist.Ime} {nutritionist.Prezime}</div>
+            </Stack>
+            <Divider sx={{mb:5 , bgcolor: "green"}}/>
+            <div className="textInfo">NEDELJNI PLAN ISHRANE</div>
             <table className="tableSchedule">
             {fullMatrix.map((row, rowIndex) => (
               rowIndex===0?
@@ -135,26 +160,47 @@ export const ClientWeekSchedule = () => {
             ))}
             </table>
         </div>}
+        <Divider sx={{m:5, bgcolor: "green"}}/>
         {allRecipesSetted && allRecipesWithoutDuplicate.map((data, index) => (
             <Box sx={{m:4}} id="groceryClass" className="groceryClass">
                 <Typography sx={{ fontStyle: 'italic', ml:"25%" }} variant="h4" width="50%">{data.recipe.recipeData.Naslov} ({data.numberOfServings} porcija)</Typography>
                 <Box width="50%">
-                    <Typography variant="h5" sx={{ml:"10%"}} width="50%">Nacin spremanja recepta: </Typography>
-                    <Typography variant="subtitle2" sx={{ml:"15%", border: 0.5}} width="50%">{data.recipe.recipeData.Opis}</Typography>
+                    <Typography variant="h5" sx={{ml:"5%"}} width="50%">Nacin spremanja recepta: </Typography>
+                    <Typography variant="body2" sx={{ml:"15%"}} color="text.secondary">
+                        {data.recipe.recipeData.Opis}
+                    </Typography>
                 </Box>
                 <Box width="50%">
-                    <Typography variant="h5" sx={{ml:"10%"}} width="50%">Sastojci: </Typography>
+                    <Typography variant="h5" sx={{ml:"5%"}} width="50%">Sastojci: </Typography>
+                    
+                    <Stack direction="row" spacing={2}>
                     {data.recipe.allGroceries.map((grocery, index)=>(
-                        <Stack direction="row" spacing={2}>
-                            <Typography variant="subtitle2" sx={{ml:"15%"}} width="50%">- {grocery.Naziv}</Typography>
-                            <Typography variant="subtitle2" sx={{ml:"15%"}} width="50%">{calculateQuantity(data.numberOfServings, data.recipe.recipeData.Broj_porcija, grocery.Kolicina)} gr</Typography>
-                        </Stack>
+                            <Chip key={grocery.id} label={generateLabelName(data.numberOfServings, data.recipe.recipeData.Broj_porcija, grocery)} sx={{m:0.5}} variant="outlined" color="primary" avatar={<Avatar src={grocery.Slika} alt="X" />} />
                     ))}
+                    </Stack>
                 </Box>
                 <Divider/>
             </Box>
         ))}
         <Button onClick={()=>{generatePdf()}}>PDF</Button>
+        <div>Zabranjeno je neovlasceno umnozavanje!</div>
         </Box>
     )
+}
+
+function sqlToJsDateAndCalcAge(sqlDate){
+    //sqlDate in SQL DATETIME format ("yyyy-mm-ddThh:mm:ss.msZ")
+    var sqlDateArr1 = sqlDate.split("-");
+    //format of sqlDateArr1[] = ['yyyy','mm','ddThh:mm:msZ']
+    var sYear = sqlDateArr1[0].toString();
+  
+    var currentDate = new Date();
+    var currentYear = currentDate.getFullYear().toString();
+  
+    var sYearInt = parseInt(sYear);
+    var currentYearInt = parseInt(currentYear);
+  
+    var age = currentYearInt - sYearInt;
+     
+    return age;
 }

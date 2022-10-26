@@ -1,3 +1,20 @@
+#bottom {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+  }
+
+#divBottom{
+	position: relative;
+}
+
+.textInfo {
+	content: "text";
+	color:black;
+	font-weight: bold;
+	font-style: italic;
+}
+
 .groceryClass{
 	width: inherit;
 }
@@ -6,6 +23,7 @@
     border-collapse: collapse; /* da bi se spojile sve linije, bez ovoga su samo linije oko teksta za svaku celiju */
     width: 100%
 }
+
 
 td{
 	text-overflow: ellipsis;

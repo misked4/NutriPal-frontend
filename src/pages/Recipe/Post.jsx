@@ -91,14 +91,14 @@ const Post = React.forwardRef(({post}, ref) => {
                         {post.Naslov}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                        {post.Opis} + {post.id}
+                        {post.Opis}
                         </Typography>
                     </CardContent>
                 </Box>
                 <CardActions>
                 <Box>
                   {groceriesForRecipe.map(x=>
-                    <Chip key={x.NamirnicaId} label={generateLabelName(x)} sx={{m:0.5}} variant="outlined" color="primary" avatar={<Avatar src={x.Slika} alt="Nemamo sliku :(" />} />
+                    <Chip key={x.NamirnicaId} label={generateLabelName(x)} sx={{m:0.5}} variant="outlined" color="primary" avatar={<Avatar src={x.Slika} alt="X" />} />
                   ).slice(0,numbersOfGroceriesToDisplay)}
                   {((groceriesForRecipe.length - numbersOfGroceriesToDisplay)>0)? 
                     <IconButton aria-label="add to favorites" onClick={()=>setNumbersOfGroceriesToDisplay(groceriesForRecipe.length)}>

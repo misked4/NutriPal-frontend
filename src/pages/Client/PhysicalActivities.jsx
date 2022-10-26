@@ -295,7 +295,7 @@ export const PhysicalActivities = () => {
               <Input
                 disabled={true}
                 value={BMI}
-                endAdornment={<InputAdornment position="end">kg/m^2</InputAdornment>}
+                endAdornment={<InputAdornment position="end"><div>kg<sup>2</sup></div></InputAdornment>}
                 startAdornment= {
                   <InputAdornment position="start">
                     <SquareFootIcon/>

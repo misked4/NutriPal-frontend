@@ -8,6 +8,35 @@
   border: 1px solid;  /* Oko tabele, redova i celija linija */
 }
 
+.tableStatus {        
+        border: 0pt;
+        border-collapse: collapse;
+        width: 100%
+}
+
+.teStatusFirstRow {
+        border: 0pt;
+        border-bottom: 1pt solid #000000;
+}
+
+.teStatusColumn{
+        border: 0pt;
+        border-right: 1pt solid #000000;
+}
+
+.teStatus{
+        border: 0pt;
+}
+
+.energyValue{
+        height: 30%;
+        width: auto;
+        color: white;
+        font-size: large;
+        border: 1pt solid #000000;
+        background-color: #3C3431;
+}
+
 .buttonWithoutRadius {
   border-radius: 0px;
 } 
@@ -76,6 +105,7 @@
     opacity: 0;
   }
 }
+
 @keyframes swing-out-top-bck {
   0% {
     -webkit-transform: rotateX(0deg);
