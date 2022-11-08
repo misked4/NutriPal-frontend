@@ -54,7 +54,7 @@ function App() {
         },
         otherColor:{
             main: "#FDF4E3"
-        } //#705446
+        }
       }
     });
 
