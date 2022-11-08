@@ -86,40 +86,40 @@ export const PhysicalActivities = () => {
     const intensityOfPhysicalActivity = [
         {
           value: '20',
-          factor: '1.3',
+          Faktor: '1.3',
           label: 'Veoma slab',
         },
         {
           value: '25',
-          factor: '1.52',
+          Faktor: '1.52',
           label: 'Slab',
         },
         {
           value: '30',
-          factor: '1.67',
+          Faktor: '1.67',
           label: 'Umeren',
         },
         {
           value: '35',
-          factor: '1.85',
+          Faktor: '1.85',
           label: 'Pojacan',
         },
         {
           value: '40',
-          factor: '2.2',
+          Faktor: '2.2',
           label: 'Izrazen',
         },
         {
           value: '45',
-          factor: '2.5',
+          Faktor: '2.5',
           label: 'Ektreman',
         },
       ];
 
     const calculate = () => {
-      const factor = selectedActivity.Faktor;
+      const Faktor = selectedActivity.Faktor;
       const sumMinutes = Number(time.Hours) * 60 + Number(time.Minutes);
-      const oneCalculateKcal = Math.round(factor * sumMinutes);
+      const oneCalculateKcal = Math.round(Faktor * sumMinutes);
       setKcal(kcal + oneCalculateKcal);
       setAdditionalInfoPatient({ ...additionalInfoPatient, PotrosnjaKalorija: (kcal + oneCalculateKcal) });
       const item = {
@@ -128,7 +128,7 @@ export const PhysicalActivities = () => {
         Faktor: selectedActivity.Faktor,
         Hours: Number(time.Hours),
         Minutes: Number(time.Minutes),
-        CalculatedKcal: oneCalculateKcal
+        value: oneCalculateKcal
       }
       listOfSelectedActivities.push(item);   
     }
@@ -140,7 +140,8 @@ export const PhysicalActivities = () => {
     },[]);
 
     useEffect(() => {
-      console.log(additionalInfo);
+      console.log("PotrosnjaKalorija");
+      console.log(PotrosnjaKalorija);
       calculateAll3Parameters();
     },[PotrosnjaKalorija]);
 
@@ -167,9 +168,16 @@ export const PhysicalActivities = () => {
     }
 
     const calculateTEE = (BMRfromFunction) => { //MORA DA SE ISPRAVI ZA IZABRANE AKTIVNOSTI SA MINUTAZOM
-      var factor= '1.3';
-      factor = intensityOfPhysicalActivity.find((el) => el.value === PotrosnjaKalorija).factor;
-      var formula = BMRfromFunction * factor;
+      var Faktor= '1.3';
+      console.log("custom");
+      console.log(custom);
+      if(!custom)
+        Faktor = intensityOfPhysicalActivity.find((el) => el.value === PotrosnjaKalorija).Faktor;
+      //else
+      //  Faktor += listOfSelectedActivities.find((el) => el.value === PotrosnjaKalorija).Faktor;
+      console.log("Faktor");
+      console.log(Faktor);
+      var formula = BMRfromFunction * Faktor;
       formula = Math.round(formula * 100) / 100;
       tee = formula;
       setAdditionalInfoPatient({ ...additionalInfoPatient, TEE: formula });
@@ -247,14 +255,13 @@ export const PhysicalActivities = () => {
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
               <TableHead>
                 <TableRow>
-                  <StyledTableCell align="center">Aktivnost</StyledTableCell>
-                  <StyledTableCell align="center">Kalorije</StyledTableCell>
+                  <StyledTableCell align="center">Aktivnost - kalorije</StyledTableCell>
                 </TableRow>
                 <TableBody>
                   {listOfSelectedActivities.map((activityWithAddInfo)=>(
                     <StyledTableRow key={activityWithAddInfo.id}>
-                      <StyledTableCell align="center">{activityWithAddInfo.Naziv}</StyledTableCell>
-                      <StyledTableCell align="center">{activityWithAddInfo.CalculatedKcal}</StyledTableCell>
+                      <StyledTableCell align="center">{activityWithAddInfo.Naziv} - </StyledTableCell>
+                      <StyledTableCell align="center">{activityWithAddInfo.value} kcal</StyledTableCell>
                     </StyledTableRow>
                   ))}
                 </TableBody>
@@ -337,9 +344,11 @@ const StyledTableCell = styled(TableCell)(() => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.secondary.main,
     color: theme.palette.primary.main,
+    border: 0,
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+    border: 0,
+    
   },
 }));
 
@@ -347,6 +356,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
     backgroundColor: theme.palette.otherColor.main,
     color: theme.palette.primary.main,
+    border: 0,
   },
   // hide last border
   '&:last-child td, &:last-child th': {
@@ -357,6 +367,7 @@ const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.otherColor.main,
   textAlign: 'left',
   color: theme.palette.text.secondary,
+  border: 0,
 }));
 
 function sqlToJsDateAndCalcAge(sqlDate){

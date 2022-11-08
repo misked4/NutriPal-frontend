@@ -41,9 +41,7 @@ export const News = () => {
     }
     return <Post key={post.id} post={post}></Post>
   })
-
-  //if(isError) return <p> Error :{ error.message }</p>
-
+  
   return (
     <Box flex={4} p={2}>
       {content}

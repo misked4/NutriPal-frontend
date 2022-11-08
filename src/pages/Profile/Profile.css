@@ -381,7 +381,7 @@ form .gender-details .category{
     background-color: #362813;
 }
 
-form input[type='radio']{
+.radioInputName{
     display: none;
 }
 

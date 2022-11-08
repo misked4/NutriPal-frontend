@@ -6,11 +6,7 @@ import { PestControl } from '@mui/icons-material';
 import { useRef } from 'react';
 import { getAllDiets, uloadPhotoIfWeAlreadyDontHave, updateUserAndHisAdditionalInfo } from './APIcalls';
 import { NewFoodSchedule } from '../Food_schedule/NewFoodSchedule';
-
-function changeHeightToPercentage() {
-    document.getElementsByClassName("myDiv")[0].style.height = "100%";
-  window.scrollTo(0, 0);
-}
+import { changeHeightToPercentage } from '../../Common';
 
 export const Profile = ({ person }) => {
     var dateFromSql = '';
@@ -171,8 +167,8 @@ export const Profile = ({ person }) => {
                             </div>
                         </div>
                         <div className="gender-details">
-                            <input type="radio" name="gender" id="dot-1" disabled checked={Pol=='M'? true : false} className="inputDisabled"/>
-                            <input type="radio" name="gender" id="dot-2" disabled checked={Pol=='F'? true : false} className="inputDisabled"/>
+                            <input type="radio" name="gender" id="dot-1" disabled checked={Pol=='M'? true : false} className="radioInputName"/>
+                            <input type="radio" name="gender" id="dot-2" disabled checked={Pol=='F'? true : false} className="radioInputName"/>
                             <span className="gender-title">Pol</span>
                             <div className="category">
                                 <label htmlFor="dot-1">

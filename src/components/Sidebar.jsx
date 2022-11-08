@@ -18,17 +18,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { hideRightBar, unhiddenRightBar } from './../redux/rightbar/actions';
 import './Rightbar.css'
 
-function changeHeightVmax() {
-  document.getElementsByClassName("myDiv")[0].style.height = "100vmax";
-  window.scrollTo(0, 0);
-}
-
-function changeHeightToPercentage() {
-  document.getElementsByClassName("myDiv")[0].style.height = "100%";
-  window.scrollTo(0, 0);
-}
-
-
 const Sidebar = ({setMode, mode}) => {
   const { user } = useSelector((state) => state.auth);
 
@@ -58,23 +47,19 @@ const Sidebar = ({setMode, mode}) => {
   const navigateToHome = () => {
     navigate('/');
     dispatch(unhiddenRightBar());
-    changeHeightVmax();
   };
   const navigateToMyClients = () => {
     navigate('/myclients');
     closeRightbar();
-    changeHeightVmax();
   };
   const navigateToNews = () => {
     navigate('/news');
     dispatch(unhiddenRightBar());
-    changeHeightToPercentage();
   };
   const navigateToAddingPatient = () => {
     changeHidden();
     navigate('/newpatient');
     dispatch(unhiddenRightBar());
-    changeHeightVmax();
   };
   const navigateToAddingRecipe = () => {
     changeHidden();
@@ -85,28 +70,27 @@ const Sidebar = ({setMode, mode}) => {
     changeHidden();
     navigate('/newfoodschedule');
     closeRightbar();
-    changeHeightVmax();
   };
   const navigateToAddingDiet = () => {
     changeHidden();
     navigate('/newdiet');
     dispatch(unhiddenRightBar());
-    changeHeightVmax();
   };
   const navigateToMyFoodSchedule = () => {
-    navigate('/mufoodschedule');
+    navigate('/myfoodschedule');
     closeRightbar();
-    changeHeightVmax();
   }
   const navigateToAchievements = () => {
     navigate('/achievements');
     closeRightbar();
-    changeHeightVmax();
   };
   const navigateToSettings = () => {
     navigate('/settings');
-    dispatch(unhiddenRightBar());
-    changeHeightVmax();
+    closeRightbar();
+  };
+  const navigateToMyProfile = () => {
+    navigate('/profile');
+    closeRightbar();
   };
   // #endregion
   
@@ -184,15 +168,9 @@ const Sidebar = ({setMode, mode}) => {
           </ListItemButton>}
           <ListItemButton>
             <ListItemIcon>
-              <EmojiEventsIcon />
-            </ListItemIcon>
-            <ListItemText primary="Postignuća" onClick={navigateToAchievements}/>
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemIcon>
               <SettingsIcon />
             </ListItemIcon>
-            <ListItemText primary="Podešavanja" onClick={navigateToSettings}/>
+            <ListItemText primary="Podešavanja" onClick={navigateToMyProfile}/>
           </ListItemButton>
           <ListItemButton>
             <ListItemIcon>
@@ -215,3 +193,10 @@ const Sidebar = ({setMode, mode}) => {
   )
 }
 export default Sidebar;
+/**
+          <ListItemButton>
+            <ListItemIcon>
+              <EmojiEventsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Postignuća" onClick={navigateToAchievements}/>
+          </ListItemButton> */

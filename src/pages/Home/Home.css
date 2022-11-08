@@ -1,0 +1,350 @@
+.classBody{
+    padding:0;
+    box-sizing: border-box;
+    
+
+}
+.classBody{
+    margin: 0 auto;
+    background: #E1C391;
+}
+
+.section{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width:100%;
+    height: 80vh;
+    background: #E1C391;
+}
+
+.welcome-img{
+    width: 40%;
+    height: 640px;
+    background: url(./assets/fruit.png);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.welcome-title{
+    display: flex;
+    flex-direction: column;
+    width:50%;
+}
+.title, .description{
+    font-size: 2em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: #866c49;
+}
+
+.description{
+    margin-top: 5%;
+    font-size: 1em;
+    font-weight: 300;
+}
+
+.presentation-cards{
+    width: 100%;
+    height: 200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.card-one, .card-two, .card-three{
+    text-align: center;
+    background-color: #705446;
+    width: 33.33%;
+    padding: 2%;
+}
+
+.card-two{
+    background-color: #3C3431;
+}
+
+.card-three{
+    background: rgb(228,232,235);
+    background: linear-gradient(60deg, rgba(228,232,235,1) 0%, rgba(246,246,246,1) 100%);
+}
+
+.card-one i, .card-two i, .card-three i{
+    color: #E1C391;
+    font-size: 1.5em;
+}
+.card-three i{
+    color:#ED3425
+}
+.card-title{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: #E1C391;
+    margin-top: 2%;
+}
+
+.card-text{
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    margin-top: 4%;
+    color: #E1C391;
+}
+
+.card-three span{
+    color: #3C3431;
+}
+
+.nutri-steps-title{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    font-family: 'Poppins',sans-serif;
+    font-weight: 600;
+    margin-top: 10%;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.nutri-steps{
+    display: flex;
+    flex-direction: row;
+    margin-top: 5%;
+    padding: 2%;
+}
+.image-container-home{
+    display: block;
+    position: relative;
+}
+.num-one, .num-two, .num-three{
+    display: flex;
+    width: 60px;
+    height: 60px;
+    padding: 2%;
+    background-color: #705446;
+    color: #E1C391;
+    font-family: 'Poppins',sans-serif;
+    border-radius: 50px;
+    position: absolute;
+    top:-20%;
+    left: 15%;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    font-weight: 600;
+}
+
+.num-two{
+    background-color: #3C3431;
+    color: #E1C391;
+}
+
+.num-three{
+    background: rgb(228,232,235);
+    background: linear-gradient(60deg, rgba(228,232,235,1) 0%, rgba(246,246,246,1) 100%);
+    color: #3C3431;
+}
+.step-one, .step-two, .step-three{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 33.33%;
+}
+.step-one-img, .step-two-img, .step-three-img{
+    width: 140px;
+    height: 140px;
+    border-radius: 80px;
+    background: url(./assets/food.jpg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.step-two-img{
+    background: url(./assets/gym.jpg);
+    background-size: cover;
+}
+
+.step-three-img{
+    background: url(./assets/water-bottle.jpg);
+    background-size: cover;
+}
+
+.step-title{
+    margin-top: 4%;
+    font-size: 1.5em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+
+.step-text{
+    margin-top: 4%;
+    padding: 2%;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+}
+
+section{
+    position: relative;
+    height: 200vh;
+}
+
+.prefooter{
+    clip: rect(0, auto, auto, 0);
+    overflow: hidden;
+    position: absolute;
+    height: 100vh;
+    left: 0;
+    width: 100%;
+    mask-image: linear-gradient(top, #ffffff 0%,#ffffff 100%);
+    -webkit-mask-image: -webkit-linear-gradient(top, #ffffff 0%,#ffffff 100%);
+}
+
+.prefooter-solid{
+    background: white;
+    top: 0;
+}
+
+.title-wrapper{
+    position: fixed;
+    display: block;
+    margin: auto;
+    width: 80%;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
+}
+
+.title-wrapper h1{
+    text-align: center;
+    font-size: 64px;
+    text-transform: uppercase;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+
+.homeh1{
+    width: inherit;
+}
+
+.prefooter-solid .title-wrapper h1{
+    background: url(./assets/section-bg.jpg);
+    background-size: 100vw auto;
+    background-position: center;
+    text-fill-color: transparent;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: black;
+} 
+
+.prefooter-image{
+    background: url(./assets/section-bg.jpg);
+    background-size: 100vw auto;
+    background-position: center;
+    background-attachment: fixed;
+    top: 100vh;
+}
+
+.prefooter-image .title-wrapper h1{
+    color: white;
+}
+
+.footer{
+    width: 100%;
+    height: 70vh;
+    background-color: #3C3431;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.footer-title{
+    font-size: 2.5em;
+    color: #E1C391;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    text-align: center;
+    margin-top:5%;
+}
+
+.footer-text{
+    display: flex;
+    flex-direction: column;
+    font-size: 1.4em;
+    font-family: 'Poppins',sans-serif;
+    font-weight: 300;
+    text-align: center;
+    margin-top: 5%;
+    color: #E1C391;
+}
+
+.contact-mail a{
+    text-decoration: none;
+    color: #E1C391;
+}
+
+.social{
+    display: inline;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    bottom: 0;
+    right:0;
+    width: 30%;
+}
+
+.instagram i{
+    padding-right: 5%;
+    font-size: 1.5em;
+    color: #E1C391;
+}
+
+.facebook i{
+    padding-right: 4%;
+    font-size: 1.5em;
+    margin-left: -1px;
+    color: #E1C391;
+}
+
+.instagram span, .facebook span{
+    font-size: 1.3em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: #E1C391;
+}
+
+@media(max-width: 800px){
+    .section{
+        flex-direction: column;
+    }
+
+    .welcome-img, .welcome-title{
+        width: 100%;
+        text-align: center;
+    }
+
+    .presentation-cards{
+        flex-direction: column;
+        height: auto;
+        margin-top: 5%;
+    }
+
+    .card-one, .card-two, .card-three{
+        width: 100%;
+    }
+
+    .nutri-steps{
+        flex-direction: column;
+    }
+
+    .step-one, .step-two, .step-three{
+        width: 100%;
+        margin-top: 5%;
+    }
+}

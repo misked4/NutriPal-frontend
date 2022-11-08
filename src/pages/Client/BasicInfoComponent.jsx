@@ -10,6 +10,7 @@ import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import DatePicker from 'react-date-picker';
 import { DescriptionAlertError } from '../../components/DescriptionAlerts';
 import { axios } from 'axios';
+import { Stack } from '@mui/system';
 
 export const BasicInfoComponent = () => {
   const { basicInfo } = useSelector((state) => state.newPatient);
@@ -194,6 +195,7 @@ export const BasicInfoComponent = () => {
           <FormHelperText>email</FormHelperText>
         </FormControl>
 
+        <Stack direction="row">
         <FormControl variant="standard" sx={{ m: 1.5, mt: 3, width: '35ch' }}>
           <Input
             inputProps={{ maxLength: 100 }}
@@ -218,7 +220,7 @@ export const BasicInfoComponent = () => {
           />
           <FormHelperText>confirm password</FormHelperText>
         </FormControl>
-        
+        </Stack>
         <FormControl variant="standard" sx={{ m: 1.5, mt: 3, width: '50ch' }}>
         <InputLabel>Telefon</InputLabel>
           <Input

@@ -59,7 +59,7 @@ const Post = React.forwardRef(({post}, ref) => {
         if(grocery.Naziv.length >= 40)
             name = grocery.Naziv.slice(0, 40) + "...";
         else name = grocery.Naziv.slice(0, 40) + " - ";
-        var quantityNumberLabel = grocery.Kolicina*100/1000 < 1? grocery.Kolicina*100 : grocery.Kolicina*100/1000;
+        var quantityNumberLabel = grocery.Kolicina*100/1000 < 1? Math.round((grocery.Kolicina*100) * 100) / 100 : grocery.Kolicina*100/1000;
         var unit = grocery.Kolicina*100/1000 < 1? "g" : "kg"
         return name + "[" + quantityNumberLabel + unit + "]";
     }

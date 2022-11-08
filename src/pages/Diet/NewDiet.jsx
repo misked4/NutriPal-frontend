@@ -6,6 +6,7 @@ import { Stack } from '@mui/system';
 import { theme } from './../../theme';
 import { DescriptionAlertError, DescriptionAlertSuccess } from '../../components/DescriptionAlerts';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import { changeHeightVmax } from '../../Common';
 import axios from "axios";
 
 export const NewDiet = () => {
@@ -74,6 +75,10 @@ export const NewDiet = () => {
             .catch((error) => console.log(error));
         }
     }
+
+    useEffect(()=>{
+        changeHeightVmax();
+    },[]);
 
     return (
       <Box flex={4} p={2}>

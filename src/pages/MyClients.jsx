@@ -12,6 +12,7 @@ import { theme } from "../theme";
 import { styled } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { deletePatientAction, loadPatientsAction, searchPatientsAction } from '../redux/patients/actions';
+import { changeHeightVmax } from '../Common';
 import Autocomplete from '@mui/material/Autocomplete';
 
 export const MyClients = () => {
@@ -27,7 +28,7 @@ export const MyClients = () => {
   }
 
   useEffect(()=>{
-    console.log("USER ID JE " + user[0].id);
+    changeHeightVmax();
     dispatch(loadPatientsAction(user[0].id));
   },[]);
   
@@ -127,7 +128,7 @@ export const MyClients = () => {
             <TableRow>
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                colSpan={6}
+                colSpan={9}
                 count={users.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
@@ -243,13 +244,16 @@ function sqlToJsDateAndCalcAge(sqlDate){
    
   return age;
 }
+
 const StyledTableCell = styled(TableCell)(() => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.secondary.main,
     color: theme.palette.primary.main,
+    border: 0,
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
+    border: 0,
   },
 }));
 
@@ -257,6 +261,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
     backgroundColor: theme.palette.cream.main,
     color: theme.palette.primary.main,
+    border: 0,
   },
   // hide last border
   '&:last-child td, &:last-child th': {

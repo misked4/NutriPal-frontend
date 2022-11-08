@@ -12,6 +12,7 @@ import { AnthropometricParameters } from './AnthropometricParameters';
 import { PhysicalActivities } from './PhysicalActivities';
 import { NewFoodSchedule } from '../Food_schedule/NewFoodSchedule';
 import { Typography } from '@mui/material';
+import { changeHeightVmax } from '../../Common';
 
 export const NewPatient = () => {
   let dispatch = useDispatch();
@@ -23,6 +24,7 @@ export const NewPatient = () => {
   };
 
   useEffect(() => {
+    changeHeightVmax();
     if(createdUser!=null)
     {    
       console.log("EVO GA UCITAN"); 

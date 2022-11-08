@@ -12,6 +12,7 @@ import { getAllRecipesForNutri, getRecipeWithHisGroceries, postWeeklyMenu,
 import { DescriptionAlertError, DescriptionAlertSuccess } from '../../components/DescriptionAlerts';
 import { changePage } from '../../redux/newPatient/actions';
 import Autocomplete from '@mui/material/Autocomplete';
+import { changeHeightVmax } from '../../Common';
 import './NewFoodSchedule.css'
 
 const n = 7;
@@ -71,6 +72,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
   }
 
   useEffect(()=>{
+    changeHeightVmax();
     if(personOnADietPlan.Uloga === "Korisnik")
     {
       getDiet(personOnADietPlan.DijetaId)

@@ -11,7 +11,7 @@ import { ThemeProvider } from '@mui/material';
 import { Stack } from "@mui/system";
 import { createTheme } from "@mui/material";
 import ProtectedRoutes from "./pages/Entry/ProtectedRoutes";
-import { Home } from './pages/Home';
+import { Home } from './pages/Home/Home';
 import { MyClients } from './pages/MyClients';
 import { News } from './pages/News';
 import { Achievements } from './pages/Achievements';
@@ -100,7 +100,7 @@ function App() {
               {nutritionRole && <Route path={"/newrecipe"} element={<NewRecipe/>}/>}
               {nutritionRole && <Route path={"/newfoodschedule"} element={<NewFoodSchedule personOnADietPlan={userForWeeklyPlan[0]} />}/>}
               {adminRole && <Route path={"/newdiet"} element={<NewDiet/>}/>}
-              <Route path={"/mufoodschedule"} element={<ClientWeekSchedule/>}/>
+              <Route path={"/myfoodschedule"} element={<ClientWeekSchedule/>}/>
               <Route path={"/profile"} element={<Profile person={userForWeeklyPlan[0]}/>}/>
 
               <Route path={"/achievements"} element={<Achievements/>}/>

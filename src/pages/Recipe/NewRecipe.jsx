@@ -14,6 +14,7 @@ import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import NextPlanIcon from '@mui/icons-material/NextPlan';
 import InfoIcon from '@mui/icons-material/Info';
 import { getAllGroceries, getGroceriesByName, uploadImage } from './APIcalls';
+import { changeHeightVmax } from '../../Common';
 import axios from "axios";
 
 export const NewRecipe = () => {
@@ -232,6 +233,7 @@ export const NewRecipe = () => {
     }
 
     useEffect(()=>{
+        changeHeightVmax()
         getAllGroceries()
           .then(data=>{
             setGroceries(data.map(oneGrocery=>{
@@ -251,7 +253,7 @@ export const NewRecipe = () => {
     const onChangeQuantity = (event, groceryId) => {
         const newRightSide = right.map(obj => {
             if (obj.id === groceryId) {
-              return {...obj, Kolicina: parseInt(event.target.value)};
+              return {...obj, Kolicina: Math.round(parseFloat(event.target.value) * 100) / 100};
             }
             return obj;
           });
@@ -337,7 +339,7 @@ export const NewRecipe = () => {
     return (
       <Box flex={4} p={2}>
         <Stack direction='row' justifyContent='center' sx={{ backgroundColor: theme.palette.secondary.main, border: "1px solid black"}}>
-            {pageRecipe!==2? <Typography>Dodajte recept koji zelite!</Typography> : <Typography>Izaberite namirice za recept!</Typography>}
+            {pageRecipe!==2? <h1>Dodajte recept koji zelite!</h1> : <h1>Izaberite namirice za recept!</h1>}
     
         </Stack>
         <Divider color="black" sx={{mt: 3, mb:5}}/>
@@ -392,7 +394,7 @@ export const NewRecipe = () => {
                         <Grid item>{customList(right,"right")}</Grid>
                 </Grid>
             </Stack>
-            <Button onClick={onClickNext} variant="contained" endIcon={<NextPlanIcon />} sx={{width: "15%", height: "25%",ml:27,mt:5 }}>
+            <Button onClick={onClickNext} variant="contained" endIcon={<NextPlanIcon />} sx={{width: "15%", height: "25%",ml:115,mt:5 }}>
                 Dalje
             </Button></Box>}
         {pageRecipe===2 && <Box><Stack direction="row" spacing={2}>
@@ -560,9 +562,8 @@ const themeForStack = {
 
 function not(a, b) {
     return a.filter((value) => b.indexOf(value) === -1);
-  }
-  
-  function intersection(a, b) {
+}
+
+function intersection(a, b) {
     return a.filter((value) => b.indexOf(value) !== -1);
-  }
-  
+}

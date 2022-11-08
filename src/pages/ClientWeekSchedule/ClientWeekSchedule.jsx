@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, Divider, Typography, Avatar, Chip } from '@mui/material';
 import html2pdf from 'html2pdf.js';
 import { getAllDataForWeekSchedule, getAllDataForRecipe } from './APIcalls';
+import { changeHeightToPercentage } from '../../Common';
 import './ClientWeekSchedule.css';
 import { Stack } from '@mui/system';
 
@@ -33,6 +34,7 @@ export const ClientWeekSchedule = () => {
     }
 
     useEffect(()=>{
+        changeHeightToPercentage();
         getAllDataForWeekSchedule(user[0].KreatorId, user[0].id, user[0].Cilj_ishrane) //nutritionist, matrix
           .then(result=>{
             setFullMatrix(result.matrix);
@@ -109,12 +111,14 @@ export const ClientWeekSchedule = () => {
 
     return (
         <Box flex={4} p={2} id="element">
-            <Stack direction="row" spacing={3}>
-                <img src="icons8-natural-food-bubbles-96.png" alt="Logo" width="96" height="96"/>
-                <div id="divBottom"><h1 id="bottom">NutriPal</h1></div>
-            </Stack>
-            <Divider sx={{bgcolor: "green"}}/>
-        {allDataArrived && <div>
+            <div className="inlineElements">
+                <Stack direction="row" spacing={3}>
+                    <img src="icons8-natural-food-bubbles-96.png" alt="Logo" width="96" height="96"/>
+                    <div id="divBottom"><h1 id="bottom">NutriPal</h1></div>
+                </Stack>
+                <Divider sx={{bgcolor: "green"}}/>
+            </div>
+        {allDataArrived && <div  className="inlineElements">
             <Stack direction="column" spacing={1} className="textInfo" sx={{m:5}}>
                 <div className="textInfo">{user[0].Ime} {user[0].Prezime}</div>
                 <div>Starost: {sqlToJsDateAndCalcAge(user[0].Datum_rodjenja)}god</div>
@@ -127,7 +131,7 @@ export const ClientWeekSchedule = () => {
             </Stack>
             <Divider sx={{mb:5 , bgcolor: "green"}}/>
             <div className="textInfo">NEDELJNI PLAN ISHRANE</div>
-            <table className="tableSchedule">
+            <table className="tableSchedule1">
             {fullMatrix.map((row, rowIndex) => (
               rowIndex===0?
               <thead key={8}> 
@@ -160,26 +164,28 @@ export const ClientWeekSchedule = () => {
             ))}
             </table>
         </div>}
-        <Divider sx={{m:5, bgcolor: "green"}}/>
+        <Divider sx={{m:5, bgcolor: "green"}} className="inlineElements"/>
         {allRecipesSetted && allRecipesWithoutDuplicate.map((data, index) => (
             <Box sx={{m:4}} id="groceryClass" className="groceryClass">
+                <div className="inlineElements">
                 <Typography sx={{ fontStyle: 'italic', ml:"25%" }} variant="h4" width="50%">{data.recipe.recipeData.Naslov} ({data.numberOfServings} porcija)</Typography>
                 <Box width="50%">
-                    <Typography variant="h5" sx={{ml:"5%"}} width="50%">Nacin spremanja recepta: </Typography>
+                    <Typography variant="h5" sx={{ml:"5%"}} width="80%">Nacin spremanja recepta: </Typography>
                     <Typography variant="body2" sx={{ml:"15%"}} color="text.secondary">
                         {data.recipe.recipeData.Opis}
                     </Typography>
                 </Box>
                 <Box width="50%">
-                    <Typography variant="h5" sx={{ml:"5%"}} width="50%">Sastojci: </Typography>
+                    <Typography variant="h5" sx={{ml:"5%"}} width="80%">Sastojci: </Typography>
                     
-                    <Stack direction="row" spacing={2}>
+                    <Stack direction="column" spacing={2} id="chipRewrite">
                     {data.recipe.allGroceries.map((grocery, index)=>(
-                            <Chip key={grocery.id} label={generateLabelName(data.numberOfServings, data.recipe.recipeData.Broj_porcija, grocery)} sx={{m:0.5}} variant="outlined" color="primary" avatar={<Avatar src={grocery.Slika} alt="X" />} />
+                        <Chip key={grocery.id} label={generateLabelName(data.numberOfServings, data.recipe.recipeData.Broj_porcija, grocery)} sx={{ml:"5%"}} variant="outlined" color="primary" avatar={<Avatar src={grocery.Slika} alt="X" />} />
                     ))}
                     </Stack>
                 </Box>
                 <Divider/>
+                </div>
             </Box>
         ))}
         <Button onClick={()=>{generatePdf()}}>PDF</Button>

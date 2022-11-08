@@ -26,6 +26,7 @@ import { returnUnseenLikes, getRecipe, setSeenAllNotifications } from '../pages/
 import { Stack } from '@mui/system';
 import { hideRightBar, unhiddenRightBar } from './../redux/rightbar/actions';
 import { loadPatientsAction, searchPatientsAction } from './../redux/patients/actions';
+import { changeHeightVmax, changeHeightToPercentage } from './../Common';
 import { Profile } from './../pages/Profile/Profile';
  
 const Navbar = () => {
@@ -311,14 +312,6 @@ const UserBoxForMobile = styled(Box)(({theme}) => ({
   }
 }));
 
-function changeHeightVmax() {
-  document.getElementsByClassName("myDiv")[0].style.height = "100vmax";
-  window.scrollTo(0, 0);
-}
-function changeHeightToPercentage() {
-  document.getElementsByClassName("myDiv")[0].style.height = "100%";
-  window.scrollTo(0, 0);
-}
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -326,11 +319,3 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default Navbar;
 //position=stic, iako skrolujemo ostaje na poziciji
-
-/**<Autocomplete
-  disablePortal
-  id="combo-box-demo"
-  options={top100Films} //lista
-  sx={{ width: 300 }}
-  renderInput={(params) => <TextField {...params} label="Movie" />}
-/> */

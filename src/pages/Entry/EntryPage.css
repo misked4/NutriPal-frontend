@@ -91,6 +91,10 @@ section#entry-page form button:hover {
     background-color: #eef;
     border: 1px solid #aaf;
 }
+
+.react-date-picker__wrapper {
+    align-items: center;
+}
 @media only screen and (min-width: 420px) {
     form h2 {
         font-size: 40px;

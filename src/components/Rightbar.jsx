@@ -22,7 +22,7 @@ export const Rightbar = () => {
   return (
     <Box id='swingRight' className='slide-in-right' bgcolor={theme.palette.cream.main} flex={1.5} p={2} sx={{display:{xs:"none", sm: "block"}, heigth:"100vmax"}}>
       <Box position="fixed">
-        <Typography variant="h5" fontWeight={100}>Oni koji su dodali recepte</Typography>
+        <Typography variant="h5" fontWeight={100}>Oni koji su dodali nove recepte</Typography>
         <AvatarGroup max={7}>
           {
             recipes.map(recipe=>(
@@ -31,7 +31,7 @@ export const Rightbar = () => {
           }
         </AvatarGroup>
         <Divider sx={{m:2}}/>
-        <Typography variant="h5" fontWeight={100}>Zadnji dodati recepti</Typography>
+        <Typography variant="h5" fontWeight={100}>Najnoviji recepti</Typography>
         <ImageList
           sx={{ width: "100%", height: "100%" }}
           variant="quilted"

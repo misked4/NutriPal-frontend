@@ -1,20 +1,20 @@
-import './EntryPage.css';
-import { useState, useEffect } from 'react';
 import React from 'react'
+import { useState, useEffect } from 'react';
+
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { register, login, reset, loading } from "./auth/authSlice";
 import { uploadImage } from "./auth/authService";
-import { Navigate, useNavigate } from 'react-router-dom';
-import { isFulfilled } from '@reduxjs/toolkit';
-import { CircularProgress } from '@mui/material';
-import { Avatar, Box } from '@mui/material';
+import { CircularProgress, Box } from '@mui/material';
+import DatePicker from 'react-date-picker';
+import { Stack } from '@mui/system';
+
+import './EntryPage.css';
 
 const EntryPage = () => {
-  const [pov, setPov] = useState({currentView: "singUp"});
+  const [pov, setPov] = useState({currentView: "signUp"});
 
   //#region Register
-  //const [selectedFile, setSelectedFile] = useState('');
   const [previewSource, setPreviewSource] = useState();
   const [formData, setFormData] = useState({
     Ime: '',
@@ -22,16 +22,17 @@ const EntryPage = () => {
     Email: '',
     Lozinka: '',
     Lozinka2: '',
-    Datum_rodjenja: '1997-04-16',
-    Uloga: 'Korisnik',
-    Telefon: '062',
+    Datum_rodjenja: '',
+    Uloga: '',
+    Telefon: '',
     Slika: '',
     Dodatne_info_Id: null,
-    Adresa: 'adresa',
+    Adresa: '',
     Pol: 'M',
     Cloudinary_public_id: null
   });
-  const { Ime, Prezime, Email, Lozinka, Lozinka2, Slika, Cloudinary_public_id } = formData;
+  const { Ime, Prezime, Email, Lozinka, Lozinka2, Pol, Slika, Cloudinary_public_id } = formData;
+  const [ dateFromForm, setDateFromForm ] = useState(new Date());
   
   //const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -55,7 +56,12 @@ const EntryPage = () => {
     {
       if(Lozinka !== Lozinka2){
         toast.error('Passwords do no match')
-      } else dispatch(register(formData));
+      } else {
+
+        console.log(formData);
+
+        dispatch(register(formData));
+      }
     }
   }, [formData.Cloudinary_public_id]) //dodaj navigate
   
@@ -64,10 +70,11 @@ const EntryPage = () => {
       ...prevState,
       [e.target.name] : e.target.value,
     }))
+    console.log(formData);
   }
   const onSubmit = (e) => {
     e.preventDefault()
-    if(pov.currentView==="singUp")
+    if(pov.currentView==="signUp")
     {
       if(!previewSource) {toast.error('Niste uneli svoju profilnu sliku'); return;}
       uploadImageFunction(previewSource);
@@ -101,16 +108,25 @@ const EntryPage = () => {
       data: base64EncodedImage
     });
     const jsonObj = JSON.parse(body);
+    
+    console.log(formData);
     dispatch(loading());
     uploadImage(jsonObj)
       .then(result=>{
+          console.log(formData);
           setFormData({ ...formData, Cloudinary_public_id: result.public_id, Slika: result.secure_url});
       })
       .catch(e=>console.log(e));
   }
-  //#endregion
 
-  
+  const changeDate = (newDate) => {
+    const offset = newDate.getTimezoneOffset();
+    const newDateWithZone = new Date(newDate.getTime() - (offset*60*1000));
+    const dateString = newDateWithZone.toISOString().split('T')[0];
+    setDateFromForm(newDate); //moramo da vratimo ono sto DataPicker prepoznaje, ne moze samo dateString
+    setFormData({ ...formData, Datum_rodjenja: dateString});
+  }
+  //#endregion
 
   const changeView = (view) => {
     setPov({
@@ -119,7 +135,7 @@ const EntryPage = () => {
   };
 
   const currentView = () => {
-    if(pov.currentView==="singUp")
+    if(pov.currentView==="signUp")
     {
         return (
           <form onSubmit={onSubmit} name="registerForm">
@@ -145,6 +161,30 @@ const EntryPage = () => {
                 <li>
                   <label htmlFor="password">Potvrdite lozinku:</label>
                   <input type="password" id="Lozinka2" name="Lozinka2" value={Lozinka2} placeholder="Potvrdite lozinku:" onChange={onChange} required/>
+                </li>
+                <li>
+                <label> Datum rodjenja:</label>
+                  <DatePicker onChange={(date) => {
+                                        const d = new Date(date);
+                                        changeDate(d);
+                                      }} value={dateFromForm} sx={{display:'flex'}}/>
+                
+                </li>
+                <li>
+                  <Stack direction='row' spacing={1} sx={{ml: 5}}>
+                  <input type="radio" id="M" name="Pol" value="M" defaultChecked="true" onChange={onChange}/>
+                  <label htmlFor="M">Muško</label>
+                  <input type="radio" id="F" name="Pol" value="F" onChange={onChange}/>
+                  <label htmlFor="F">Žensko</label>
+                  </Stack>
+                </li>
+                <li>
+                  <Stack direction='row' spacing={1} sx={{ml: 5}}>
+                  <input type="radio" id="Korisnik" name="Uloga" value="Korisnik" defaultChecked="true" onChange={onChange}/>
+                  <label htmlFor="M">Korisnik</label>
+                  <input type="radio" id="Nutricionista" name="Uloga" value="Nutricionista" onChange={onChange}/>
+                  <label htmlFor="F">Nutricionista</label>
+                  </Stack>
                 </li>
               </ul>{previewSource && (<Box
                                   component="img"
@@ -181,7 +221,7 @@ const EntryPage = () => {
             </li>
             <li>
               <i/>
-              <a onClick={ () => changeView("PWReset")}>Forgot Password?</a>
+              <a onClick={ () => changeView("PWReset")}>Zaboravili ste lozinku?</a>
             </li>
           </ul>
         </fieldset>
@@ -192,12 +232,12 @@ const EntryPage = () => {
     else if(pov.currentView==="PWReset"){
       return (
         <form>
-        <h2>Reset Password</h2>
+        <h2>Obnovi lozinku</h2>
         <fieldset>
-          <legend>Password Reset</legend>
+          <legend>Resetuj lozinku</legend>
           <ul>
             <li>
-              <em>A reset link will be sent to your inbox!</em>
+              <em>Reset link biće Vam poslat u inbox-u!</em>
             </li>
             <li>
               <label htmlFor="email">Email:</label>
@@ -205,8 +245,8 @@ const EntryPage = () => {
             </li>
           </ul>
         </fieldset>
-        <button>Send Reset Link</button>
-        <button type="button" onClick={ () => changeView("logIn")}>Go Back</button>
+        <button>Pošalji reset link</button>
+        <button type="button" onClick={ () => changeView("logIn")}>Nazad</button>
       </form>
       )
     }

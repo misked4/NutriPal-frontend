@@ -1,3 +1,8 @@
+#element{
+	width: 100%;
+}
+
+
 #bottom {
 	position: absolute;
 	bottom: 0;
@@ -18,7 +23,8 @@
 .groceryClass{
 	width: inherit;
 }
-.tableSchedule {
+
+.tableSchedule1 {
     /* border-spacing: 10px; razmak izmedju cells (trenutno nema smisla jer ga border-collapse spaja)*/
     border-collapse: collapse; /* da bi se spojile sve linije, bez ovoga su samo linije oko teksta za svaku celiju */
     width: 100%
@@ -43,14 +49,22 @@ td{
     letter-spacing: 0.00938em;
 }
 
-.tableSchedule, tr, td, th {
+.tableSchedule1, tr, td, th {
 border: 1px solid;  /* Oko tabele, redova i celija linija */
 }
 
 @media 
 only screen and (max-width: 760px),
 (min-device-width: 768px) and (max-device-width: 1024px)  {
-	
+	#chipRewrite {
+		display: table;
+		/* display: -webkit-flex; */
+		flex-direction: row;
+	}
+
+	.inlineElements{
+		display: inline-block;
+	}
 	/* Force table to not be like tables anymore */
 	table, 
 	thead, 
@@ -71,6 +85,7 @@ only screen and (max-width: 760px),
 	tr { border: 1px solid black; }
  
 	td { 
+		width: auto;
 		/* Behave  like a "row" */
 		border: none;
 		border-bottom: 1px solid black; 
