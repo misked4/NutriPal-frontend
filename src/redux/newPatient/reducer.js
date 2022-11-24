@@ -44,7 +44,13 @@ const newPatientReducers = (state = initialState, action) => {
         }
         case types.DONE_ADDING_NEW_PATIENT:
         return{
-            state: initialState,
+            basicInfo: {},
+            additionalInfo: {},
+            activities: [],
+            allergens: [],
+            diet: {},
+            allDone: false,
+            validEmail : undefined,
             createdUser: action.payload,
             page: "4",
             loading: false

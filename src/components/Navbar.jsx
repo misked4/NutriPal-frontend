@@ -17,6 +17,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import Post from '../pages/Recipe/Post';
 import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
+import axios from "axios";
 //---ovo je za pribavljanje informacija iz state
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -38,6 +39,7 @@ const Navbar = () => {
   //notifications is get by returnUnseenLikedRecipesQuery.sql file, so he defined what field we have in json
   const [notifications, setNotifications] = useState([]);
   const [selectedUserProfile, setSelectedUserProfile] = useState('');
+  const [ allUsers, setAllUsers ] = useState([]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -46,9 +48,9 @@ const Navbar = () => {
 
   const onLogout = () => {
     console.log("LOGOUT");
+    navigate('/');
     dispatch(logout());
     dispatch(reset());
-    navigate('/');
     window.location.reload(false);
   }
 
@@ -90,6 +92,10 @@ const Navbar = () => {
     {
       dispatch(loadPatientsAction(user[0].id));
     }
+    if(user[0].Uloga === "Admin")
+    {
+      dispatch(getAllUsers());
+    }
     returnUnseenLikes(user[0].id)
       .then(data=>{
           setNotifications(data);
@@ -98,6 +104,18 @@ const Navbar = () => {
           //console.log(e)
       });
   },[]);
+
+  const getAllUsers = () => {
+    return function (dispatch) {
+        axios
+        .get(`${process.env.REACT_APP_API}/users`)
+        .then((resp) => {
+            setAllUsers(resp.data);
+            console.log(resp.data);
+        })
+        .catch((error) => console.log(error));
+    }
+  }
 
   const navigateToHome = () => {
     navigate('/');
@@ -184,7 +202,26 @@ const Navbar = () => {
                 <MenuItem value="" sx={{ width: "100%" }}>
                   <em>None</em>
                 </MenuItem>
-                {users.map((oneUser) => (
+                {user[0].Uloga==="Nutricionista" && users.map((oneUser) => (
+                  <MenuItem key={oneUser.id} value={oneUser} sx={{ width: "100%" }}>{oneUser.Ime} {oneUser.Prezime}</MenuItem>
+                ))}
+            </Select>
+        </FormControl>}
+        {user[0].Uloga==="Admin" && allUsers.length > 0 && <FormControl sx={{ m: 1, minWidth: 80, width: "40%",  backgroundColor: "white", borderRadius: '16px' }}>
+          <InputLabel id="demo-simple-select-autowidth-label" sx={{ width: "40%" }}>Vidite profil nekog korisnika</InputLabel>
+            <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              value={selectedUserProfile}
+              onChange={handleChangeSelect}
+              autoWidth
+              label="Vidite profil nekog korisnika"
+              sx={{ width: "100%", borderRadius: '16px' }}
+            >
+                <MenuItem value="" sx={{ width: "100%" }}>
+                  <em>None</em>
+                </MenuItem>
+                {allUsers.map((oneUser) => (
                   <MenuItem key={oneUser.id} value={oneUser} sx={{ width: "100%" }}>{oneUser.Ime} {oneUser.Prezime}</MenuItem>
                 ))}
             </Select>
@@ -222,8 +259,6 @@ const Navbar = () => {
         }}
       >
         <StyledToolbar><AccountCircleIcon /><MenuItem onClick={goToMyProfilePage}>Moj profil</MenuItem></StyledToolbar>
-        <StyledToolbar><SendOutlinedIcon/><MenuItem>Moje objave</MenuItem></StyledToolbar>
-        <StyledToolbar><AssignmentIcon/><MenuItem>Info o licenci</MenuItem></StyledToolbar>
         <StyledToolbar><LogoutIcon/><MenuItem onClick={onLogout}>Odjavi se</MenuItem></StyledToolbar>
       </Menu>
       <Menu
@@ -319,3 +354,5 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default Navbar;
 //position=stic, iako skrolujemo ostaje na poziciji
+//<StyledToolbar><SendOutlinedIcon/><MenuItem>Moje objave</MenuItem></StyledToolbar>
+//<StyledToolbar><AssignmentIcon/><MenuItem>Info o licenci</MenuItem></StyledToolbar>

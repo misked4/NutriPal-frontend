@@ -291,6 +291,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
     }
   }
   
+  // back to first page, 2 next functions
   const ReturnToFirstPage = () => {
     setPageRecipe(1);
   }
@@ -454,7 +455,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
         </table>
       </div>
       {hiddenForm &&  <Button onClick={SaveWholeWeeklyMenu} sx={{mt: 3, ml:"78%"}} variant="contained" component="label">POTVRDI CEO NEDELJNI JELOVNIK</Button>}
-      {hiddenForm && personOnADietPlan.Uloga === "Korisnik" && <Button onClick={ShowStatusMatrix} sx={{mt: 3, mb:3, ml:"78%"}} variant="contained" component="label">VIDI NEDELJNI STATUS</Button>}
+      {hiddenForm && personOnADietPlan.Uloga === "Korisnik" && personOnADietPlan.BMI && <Button onClick={ShowStatusMatrix} sx={{mt: 3, mb:3, ml:"78%"}} variant="contained" component="label">VIDI NEDELJNI STATUS</Button>}
       {hiddenForm && thisIsForNutritionist && <Button onClick={ReturnToFirstPage} sx={{mt: 3, ml:"78%"}} variant="contained" component="label">VRATI SE NA PRETHODNU STRANU</Button>}
       {!hiddenForm && <Stack direction="row" spacing={2} sx={{m:5, ml: "20%"}} id="swingBox" className='swing-in-top-fwd'>
         <Stack direction="column" spacing={2}><Autocomplete

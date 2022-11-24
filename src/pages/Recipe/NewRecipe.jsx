@@ -5,7 +5,7 @@ import { Box, Divider, InputAdornment, TextField, Button, Typography, FormContro
     Input, InputLabel, MenuItem, Select, FormHelperText, IconButton, 
     Grid, Paper, List, ListItem, ListItemButton, ListItemIcon, Checkbox, ListItemText, 
     Autocomplete, TableContainer, TableHead, TableRow, TableCell, TableBody, Table, Card,
-    CardMedia, CardContent, Dialog, DialogActions } from '@mui/material';
+    CardMedia, CardContent, Dialog, DialogActions, CircularProgress } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Stack } from '@mui/system';
 import { theme } from './../../theme';
@@ -38,6 +38,7 @@ export const NewRecipe = () => {
     
     const [ pageRecipe, setPageRecipe ] = useState(1);
     const [ errorState, setErrorState ] = useState(false);
+    const [ loading, setLoading ] = useState(false);
     const [ successState, setSuccessState ] = useState(false);
 
     const onChangeParameter = (e) => {
@@ -52,10 +53,12 @@ export const NewRecipe = () => {
     const saveRecipe = () => {
         if(Naslov!==undefined && Opis!==undefined && previewSource && right.length > 0)
         {
+            setLoading(true);
             uploadImageFunction(previewSource);
         }
         else
         {
+            setLoading(false);
             setRecipeData(initialState);
             setErrorState(true);
         }
@@ -102,7 +105,7 @@ export const NewRecipe = () => {
           .then(result=>{            
                 setRecipeData({...recipeData, Cloudinary_public_id: result.public_id, Slika: result.secure_url, Niz_namirnica: right});
             })
-          .catch(e=>console.log(e));
+          .catch(e=> { console.log(e); setLoading(false); });
     }
 
     useEffect(()=>{
@@ -111,6 +114,7 @@ export const NewRecipe = () => {
         {
             dispatch(addRecipe(recipeData));
             setErrorState(false);
+            setLoading(false);
             getAllGroceries()
                 .then(data=>{
                     setGroceries(data.map(oneGrocery=>{
@@ -482,9 +486,9 @@ export const NewRecipe = () => {
                                   src={previewSource}
                                 />)}
                 <input type="file" name="image" onChange={handleFileInputChange}/>    
-                <Button sx={{m:1}} variant="contained" onClick={saveRecipe} endIcon={<SaveAltIcon />}>
+                {loading? <Button sx={{m:1}} variant="contained" ><CircularProgress /></Button> : <Button sx={{m:1}} variant="contained" onClick={saveRecipe} endIcon={<SaveAltIcon />}>
                 Zapamti
-                </Button>
+                </Button>}
             </Stack>
         </Stack></Box>}
         

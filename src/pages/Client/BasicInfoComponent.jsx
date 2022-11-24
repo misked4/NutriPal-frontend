@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, FormControl, FormHelperText, Input, InputAdornment, InputLabel, Button, Typography, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import { Box, FormControl, FormHelperText, Input, InputAdornment, InputLabel, Button, Typography, FormLabel, RadioGroup, FormControlLabel, Radio, CircularProgress } from '@mui/material';
 import { addBasicInfo, changePage, checkEmailAction, uploadImage } from '../../redux/newPatient/actions';
 import { checkEmailIfExist, uloadPhotoIfWeAlreadyDontHave } from './APIcalls';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
@@ -37,7 +37,7 @@ export const BasicInfoComponent = () => {
     const [ error, setError ] = useState("");
     const [ dateFromForm, setDateFromForm ] = useState(new Date());
     const [ sideEffects, setSideEffects ] = useState(false);
-
+    const [ loading, setLoading ] = useState(false);
 
     const handleChange = (prop) => (event) => {
       setBasicInfoOfPatient({ ...basicInfoOfPatient, [prop]: event.target.value });
@@ -54,20 +54,29 @@ export const BasicInfoComponent = () => {
     const onClickEvent = (e) => {
       e.preventDefault();
       console.log("1 function, email check");
+      setLoading(true);
       checkEmailIfExist(Email)
-        .then(result=>{console.log("result"); setError("Email");})
+        .then(result=>{console.log("result"); setError("Email"); setLoading(false);;})
         .catch(e=>{
           setBasicInfoOfPatient({ ...basicInfoOfPatient, Email: Email});
-          if(!previewSource) {setError("Slika"); return;}
+          if(!previewSource) {setError("Slika"); setLoading(false); return;}
           else{
             console.log(basicInfo);
-            if(basicInfo.Slika && basicInfo.Slika === previewSource){
-              setSideEffects(true);
-              console.log(basicInfoOfPatient);
-              console.log('we have basicInfo and same SLIKA');
+            if(basicInfo)
+            {
+              if(basicInfo.Slika && basicInfo.Slika === previewSource){
+                setSideEffects(true);
+                console.log(basicInfoOfPatient);
+                console.log('we have basicInfo and same SLIKA');
+              }
+              else {
+                console.log('we have basicInfo but not same SLIKA');
+                uploadImageFunction(previewSource);
+                //unutar ove fje ima setSideEffects(true);
+              }
             }
-            else {
-              console.log('we have basicInfo but not same SLIKA');
+            else{
+              console.log('We dont have basicInfo, basicInfo = undefined');
               uploadImageFunction(previewSource);
               //unutar ove fje ima setSideEffects(true);
             }
@@ -120,7 +129,7 @@ export const BasicInfoComponent = () => {
           setBasicInfoOfPatient({ ...basicInfoOfPatient, Cloudinary_public_id: resp.data.public_id, Slika: resp.data.secure_url});
           setSideEffects(true);
       })
-        .catch((error) => console.log(error));
+        .catch((error) => {console.log(error); setLoading(false);} );
         //console.log(basicInfo);
     }
     // #endregion
@@ -136,12 +145,17 @@ export const BasicInfoComponent = () => {
           dispatch(addBasicInfo(basicInfoOfPatient));
           dispatch(changePage("2"));
         }
-        else setError("Lozinka");
+        else {setError("Lozinka"); setLoading(false); }
       }
     }
 
     return (
     <Box >
+      
+        
+      {error && error==="Email" && DescriptionAlertError("Email koji ste uneli je vec zauzet.")}
+        {error && error==="Lozinka" && DescriptionAlertError("Lozinke se ne poklapaju.")}
+        {error && error==="Slika" && DescriptionAlertError("Morate uneti sliku.")}
       <FormControl variant="standard" sx={{ m: 1.5, mt: 3, width: '40ch' }}>
           <Input
             sx={{
@@ -182,6 +196,7 @@ export const BasicInfoComponent = () => {
         <FormControl variant="standard" sx={{ m: 1.5, mt: 3, width: '70ch' }}>
           <Input
             inputProps={{ maxLength: 100 }}
+            type="email"
             value={Email}
             onChange={handleChange('Email')}
             disabled = {basicInfo && basicInfo.Email ? true : false}
@@ -199,6 +214,7 @@ export const BasicInfoComponent = () => {
         <FormControl variant="standard" sx={{ m: 1.5, mt: 3, width: '35ch' }}>
           <Input
             inputProps={{ maxLength: 100 }}
+            type="password"
             value={Lozinka}
             onChange={handleChange('Lozinka')}
             endAdornment={Lozinka ? <InputAdornment position="end">Lozinka</InputAdornment> : <InputAdornment position="end">Niste uneli Lozinku <WarningAmberOutlinedIcon /></InputAdornment>}
@@ -214,6 +230,7 @@ export const BasicInfoComponent = () => {
         <FormControl variant="standard" sx={{ m: 1.5, mt: 3, width: '35ch' }}>
           <Input
             inputProps={{ maxLength: 100 }}
+            type="password"
             value={Lozinka2}
             onChange={handleChange('Lozinka2')}
             endAdornment={Lozinka2 ? <InputAdornment position="end">Potvrda</InputAdornment> : <InputAdornment position="end">Niste potvrdili Lozinku <WarningAmberOutlinedIcon/></InputAdornment>}
@@ -274,19 +291,19 @@ export const BasicInfoComponent = () => {
                                   }}
                                   src={previewSource}
                                 />)}
-        <Button sx={{ m: 1.5, mt: 3 }} onClick={(e) => onClickEvent(e)}>Zapamti</Button>
-        <Button
-          variant="contained"
-          component="label"
-          sx={{ m: 1.5, mt: 3 }}
-        >
-          Upload File
-          <input hidden type="file" name="image"  onChange={handleFileInputChange}/>
-        </Button>
-        
-        {error && error==="Email" && DescriptionAlertError("Email koji ste uneli je vec zauzet.")}
-        {error && error==="Lozinka" && DescriptionAlertError("Lozinke se ne poklapaju.")}
-        {error && error==="Slika" && DescriptionAlertError("Morate uneti sliku.")}
+        {loading? <Button sx={{ m: 1.5, mt: 3 }}><CircularProgress /></Button> : 
+        <Box>
+          <Button sx={{ m: 1.5, mt: 3 }} onClick={(e) => onClickEvent(e)}>Zapamti</Button>
+          
+          <Button
+            variant="contained"
+            component="label"
+            sx={{ m: 1.5, mt: 3 }}
+          >
+            Upload File
+            <input hidden type="file" name="image"  onChange={handleFileInputChange}/>
+          </Button>
+        </Box>}
     </Box>
   )
 }

@@ -11,6 +11,8 @@ import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
 import MedicationLiquidOutlinedIcon from '@mui/icons-material/MedicationLiquidOutlined';
 import GroupIcon from '@mui/icons-material/Group';
+import LunchDiningIcon from '@mui/icons-material/LunchDining';
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import { theme } from "../theme";
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
@@ -76,6 +78,16 @@ const Sidebar = ({setMode, mode}) => {
     navigate('/newdiet');
     dispatch(unhiddenRightBar());
   };
+  const navigateToAddingGrocery = () => {
+    changeHidden();
+    navigate('/newgrocery');
+    dispatch(unhiddenRightBar());
+  }
+  const navigateToAddingActivity = () => {
+    changeHidden();
+    navigate('/newactivity');
+    dispatch(unhiddenRightBar());
+  }
   const navigateToMyFoodSchedule = () => {
     navigate('/myfoodschedule');
     closeRightbar();
@@ -112,7 +124,13 @@ const Sidebar = ({setMode, mode}) => {
             <ListItemIcon>
               <GroupIcon />
             </ListItemIcon>
-            <ListItemText primary="Moji klijenti" onClick={navigateToMyClients}/>
+            <ListItemText primary="Moji korisnici" onClick={navigateToMyClients}/>
+          </ListItemButton>}
+          {user[0].Uloga === 'Admin' && <ListItemButton>
+            <ListItemIcon>
+              <GroupIcon />
+            </ListItemIcon>
+            <ListItemText primary="Svi korisnici" />
           </ListItemButton>}
           <ListItemButton>
             <ListItemIcon>
@@ -136,7 +154,7 @@ const Sidebar = ({setMode, mode}) => {
                 <ListItemIcon>
                   <PersonAddAltOutlinedIcon />
                 </ListItemIcon>
-                <ListItemText primary="Novog klijenta" onClick={navigateToAddingPatient}/>
+                <ListItemText primary="Novog korisnika" onClick={navigateToAddingPatient}/>
               </ListItemButton>}
               {user[0].Uloga === 'Nutricionista' && <ListItemButton>
                 <ListItemIcon>
@@ -155,6 +173,18 @@ const Sidebar = ({setMode, mode}) => {
                   <MedicationLiquidOutlinedIcon />
                 </ListItemIcon>
                 <ListItemText primary="Novu dijetu" onClick={navigateToAddingDiet}/>
+              </ListItemButton>}
+              {user[0].Uloga === 'Admin' && <ListItemButton>
+                <ListItemIcon>
+                  <LunchDiningIcon />
+                </ListItemIcon>
+                <ListItemText primary="Novu namirnicu" onClick={navigateToAddingGrocery}/>
+              </ListItemButton>}
+              {user[0].Uloga === 'Admin' && <ListItemButton>
+                <ListItemIcon>
+                  <FitnessCenterIcon />
+                </ListItemIcon>
+                <ListItemText primary="Novu aktivnost" onClick={navigateToAddingActivity}/>
               </ListItemButton>}
               <Divider style={{
                               width: "200px"
@@ -180,14 +210,6 @@ const Sidebar = ({setMode, mode}) => {
           </ListItemButton>
         </List>
         <Divider />
-        <List component="nav" aria-label="secondary mailbox folder">
-          <ListItemButton>
-            <ListItemText primary="Trash" />
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemText primary="Spam" />
-          </ListItemButton>
-        </List>
       </Box>
     </Box>
   )

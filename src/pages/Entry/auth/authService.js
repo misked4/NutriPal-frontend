@@ -14,7 +14,6 @@ const register = async(userData) => {
 
 // login user
 const login = async(userData) => {
-    //console.log(`${process.env.REACT_APP_API}/user/?email=${userData.email}&password=${userData.password}`);
     const response = await axios.get(`${process.env.REACT_APP_API}/user/?email=${userData.email}&password=${userData.password}`);
     if(response.data){
         localStorage.setItem('user', JSON.stringify(response.data))

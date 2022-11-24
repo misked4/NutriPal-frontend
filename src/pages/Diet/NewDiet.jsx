@@ -63,10 +63,10 @@ export const NewDiet = () => {
         }
     }
 
-    const addDiet = (dietDate) => {
+    const addDiet = (dietData) => {
         return function (dispatch) {
             axios
-            .post(`${process.env.REACT_APP_API}/diet`, dietDate)
+            .post(`${process.env.REACT_APP_API}/diet`, dietData)
             .then((resp) => {
                 console.log("Response from addDiet: ",resp);
                 setSuccessState(true);
@@ -165,7 +165,7 @@ export const NewDiet = () => {
                         }}
                     />
                 </Stack>
-                <Typography align="right">*Unesite granice belancevine</Typography>
+                <Typography align="right">*Unesite granice proteina</Typography>
                 <Stack
                 direction="row"
                 maxrows = {2}
@@ -177,7 +177,7 @@ export const NewDiet = () => {
                         name="PROTEINI_min"
                         value={PROTEINI_min}
                         onChange={onChangeParameter}
-                        placeholder="Unesite min Belancevine"
+                        placeholder="Unesite min proteina"
                         maxrows={1}
                         multiline
                         InputProps={{
@@ -192,7 +192,7 @@ export const NewDiet = () => {
                     name="PROTEINI_max"
                     value={PROTEINI_max}
                     onChange={onChangeParameter}
-                    placeholder="Unesite max Belancevine"
+                    placeholder="Unesite max proteina"
                     maxrows={1}
                     multiline
                     InputProps={{

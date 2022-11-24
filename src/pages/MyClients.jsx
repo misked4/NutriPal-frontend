@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import { useTheme, Box, Table, TableBody, TableCell, TableContainer, TableFooter, TablePagination,
-  TableRow, Paper, TableHead, ButtonGroup, Button, TextField, Avatar } from '@mui/material';
+  TableRow, Typography ,Paper, TableHead, ButtonGroup, Button, TextField, Avatar, AppBar, Toolbar, Dialog, Slide } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
@@ -14,6 +14,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { deletePatientAction, loadPatientsAction, searchPatientsAction } from '../redux/patients/actions';
 import { changeHeightVmax } from '../Common';
 import Autocomplete from '@mui/material/Autocomplete';
+import { Profile } from './Profile/Profile';
+import { hideRightBar } from './../redux/rightbar/actions';
 
 export const MyClients = () => {
   let dispatch = useDispatch();
@@ -28,9 +30,21 @@ export const MyClients = () => {
   }
 
   useEffect(()=>{
+    closeRightbar();
     changeHeightVmax();
     dispatch(loadPatientsAction(user[0].id));
-  },[]);
+  },[]);  
+
+  const closeRightbar = () => {
+    setTimeout(function(){
+      dispatch(hideRightBar());
+    }, 1200);
+    var element = document.getElementById('swingRight');
+    if (element && element.classList.contains('slide-in-right')) {
+      element.classList.remove('slide-in-right');      
+      element.classList.add('slide-out-right');
+    }
+  }
   
   const handleDelete = (infoId) => {;
     if(window.confirm("Are you sure want to delete the user?")) {
@@ -39,6 +53,8 @@ export const MyClients = () => {
   }
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [openFullDialogForProfile, setOpenFullDialogForProfile] = useState(false);
+  const [selectedUserProfile, setSelectedUserProfile] = useState('');
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -51,6 +67,25 @@ export const MyClients = () => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+  };
+
+  //For user profile(PROMENI button)
+  const closeFullDialogProfile = () => {
+    changeHeightVmax();
+    if(user[0].Uloga === "Nutricionista")
+    {
+      dispatch(loadPatientsAction(user[0].id));
+    }
+    setOpenFullDialogForProfile(false);
+  };
+
+  const handleSelectUser = (user) => {
+    setSelectedUserProfile(user);
+    enterFullDialogProfile();
+  };
+
+  const enterFullDialogProfile = () => {
+    setOpenFullDialogForProfile(true);
   };
 
   return (
@@ -110,7 +145,7 @@ export const MyClients = () => {
                   },
                 }}>
                 <ButtonGroup variant="outlined" aria-label="outlined button group">
-                  <Button>Promeni</Button>
+                  <Button onClick={()=>handleSelectUser(row)}>Promeni</Button>
                   <Button onClick={()=>handleDelete(row.Dodatne_info_Id)}>Obrisi</Button>
                 </ButtonGroup>
                 </Box>
@@ -134,7 +169,7 @@ export const MyClients = () => {
                 page={page}
                 SelectProps={{
                   inputProps: {
-                    'aria-label': 'rows per page',
+                    'aria-label': 'Broj reda na stranici',
                   },
                   native: true,
                 }}
@@ -163,6 +198,26 @@ export const MyClients = () => {
                   />
                 )}
               />
+        <Dialog
+          fullScreen
+          open={openFullDialogForProfile}
+          onClose={closeFullDialogProfile}
+          TransitionComponent={Transition}
+          >
+          <AppBar sx={{ position: 'relative' }}>
+            <Toolbar>
+              <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                NutriPal
+              </Typography>
+              <Button autoFocus color="inherit" onClick={closeFullDialogProfile}>
+                Zatvori
+              </Button>
+            </Toolbar>
+          </AppBar>
+          <Box backgroundColor="#E1C391">
+            <Profile person={selectedUserProfile}/>
+          </Box>
+        </Dialog>
     </Box>
   );
 }
@@ -268,4 +323,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 // #endregion

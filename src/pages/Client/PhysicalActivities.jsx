@@ -35,6 +35,7 @@ export const PhysicalActivities = () => {
     const [ selectedActivity, setSelectedActivity] = useState([]);
     const [ listOfSelectedActivities, setListOfSelectedActivities ] = useState([]);
     const [ kcal, setKcal ] = useState(0);
+    const [ factors, setFactors ] = useState(0);
     var bmr, tee, bmi = '';
 
     const [ time, setTime ] = useState({
@@ -118,6 +119,7 @@ export const PhysicalActivities = () => {
 
     const calculate = () => {
       const Faktor = selectedActivity.Faktor;
+      setFactors(factors+Faktor);
       const sumMinutes = Number(time.Hours) * 60 + Number(time.Minutes);
       const oneCalculateKcal = Math.round(Faktor * sumMinutes);
       setKcal(kcal + oneCalculateKcal);
@@ -173,8 +175,8 @@ export const PhysicalActivities = () => {
       console.log(custom);
       if(!custom)
         Faktor = intensityOfPhysicalActivity.find((el) => el.value === PotrosnjaKalorija).Faktor;
-      //else
-      //  Faktor += listOfSelectedActivities.find((el) => el.value === PotrosnjaKalorija).Faktor;
+      else
+        Faktor = factors;
       console.log("Faktor");
       console.log(Faktor);
       var formula = BMRfromFunction * Faktor;

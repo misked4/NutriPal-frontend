@@ -212,7 +212,7 @@ export const Profile = ({ person }) => {
                                 </select>
                             </div>
                         </div> </div>}
-                        {Uloga==="Admin" && <div> <div className="title additional">Admin only</div>
+                        {user[0].Uloga==="Admin" && <div> <div className="title additional">Admin only</div>
                         <div className="user-details">
                             <div className="input-box">
                                 <span className="details">Tip korisnika</span>
