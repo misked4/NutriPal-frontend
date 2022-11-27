@@ -5,8 +5,8 @@ export const getAllRecipesForNutri = async (userId) => {
     return response.data;
 }
 
-export const getRecipeWithHisGroceries = async (recipeId) => {
-    const response = await axios.get(`${process.env.REACT_APP_API}/fullrecipe/${recipeId}`);
+export const getRecipeWithHisFullGroceries = async (recipeId) => { // TODO: change api call
+    const response = await axios.get(`${process.env.REACT_APP_API}/fullgroceries/${recipeId}`);
     return response.data;
 }
 
