@@ -1,3 +1,15 @@
+# HOW TO START FRONTEND APP:
+# 1. Enter frontend folder:
+cd frontend
+
+# 2. Install all dependencies for React app
+npm install
+
+# 3. Start NutriPal frontend React app
+npm start
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -68,10 +80,3 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-
-
-### heroku
-
-git add .
-git commit -am 'changed nodemon to node'
-git push heroku master

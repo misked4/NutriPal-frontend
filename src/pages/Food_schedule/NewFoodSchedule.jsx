@@ -170,7 +170,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
 
   const setMatrixFunction = (nutriId, patientId, goal) => {
     getWeeklyMenu(nutriId, patientId, goal)
-      .then(result=>{setMatrix(result); console.log(result);})
+      .then(result=>{setMatrix(result); console.log("Get weekly menu"); console.log(result);})
       .catch(e=>console.log(e));
   }
 
@@ -305,6 +305,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
       copy[rowIndex][columnIndex] = null;
     }
     setMatrix(copy);
+    console.log("matrix");
     console.log(matrix);
   };
 
@@ -329,10 +330,6 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
               var sum_UH = 0;
               var sum_PROTEINI = 0;
               var sum_MASTI = 0;
-              var sum_Energetska_vrednost = 0;
-              var sum_Ukupno_proteina = 0;
-              var sum_Ukupno_ugljenih_hidrata = 0;
-              var sum_Ukupno_masti = 0;
               var sum_od_toga_zasicene_masne_kiseline = 0;
               var sum_Dijetalna_vlakna = 0;
               var sum_Ukupno_secera = 0;
@@ -371,10 +368,6 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
                 sum_UH += Math.round(grocery.UH*newQuantity);
                 sum_PROTEINI += Math.round(grocery.Proteini*newQuantity);
                 sum_MASTI += Math.round(grocery.Masti*newQuantity);
-                sum_Energetska_vrednost += Math.round(grocery.Energetska_vrednost*newQuantity);
-                sum_Ukupno_proteina += Math.round(grocery.Ukupno_proteina*newQuantity);
-                sum_Ukupno_ugljenih_hidrata += Math.round(grocery.Ukupno_ugljenih_hidrata*newQuantity);
-                sum_Ukupno_masti += Math.round(grocery.Ukupno_masti*newQuantity);
                 sum_od_toga_zasicene_masne_kiseline += Math.round(grocery.od_toga_zasicene_masne_kiseline*newQuantity);
                 sum_Dijetalna_vlakna += Math.round(grocery.Dijetalna_vlakna*newQuantity);
                 sum_Ukupno_secera += Math.round(grocery.Ukupno_secera*newQuantity);
@@ -489,10 +482,6 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
     var sum_UH = 0;
     var sum_PROTEINI = 0;
     var sum_MASTI = 0;
-    var sum_Energetska_vrednost = 0;
-    var sum_Ukupno_proteina = 0;
-    var sum_Ukupno_ugljenih_hidrata = 0;
-    var sum_Ukupno_masti = 0;
     var sum_od_toga_zasicene_masne_kiseline = 0;
     var sum_Dijetalna_vlakna = 0;
     var sum_Ukupno_secera = 0;
@@ -529,10 +518,6 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
       sum_UH += Math.round(grocery.UH*newQuantity);
       sum_PROTEINI += Math.round(grocery.Proteini*newQuantity);
       sum_MASTI += Math.round(grocery.Masti*newQuantity);
-      sum_Energetska_vrednost += Math.round(grocery.Energetska_vrednost*newQuantity);
-      sum_Ukupno_proteina += Math.round(grocery.Ukupno_proteina*newQuantity);
-      sum_Ukupno_ugljenih_hidrata += Math.round(grocery.Ukupno_ugljenih_hidrata*newQuantity);
-      sum_Ukupno_masti += Math.round(grocery.Ukupno_masti*newQuantity);
       sum_od_toga_zasicene_masne_kiseline += Math.round(grocery.od_toga_zasicene_masne_kiseline*newQuantity);
       sum_Dijetalna_vlakna += Math.round(grocery.Dijetalna_vlakna*newQuantity);
       sum_Ukupno_secera += Math.round(grocery.Ukupno_secera*newQuantity);
@@ -814,6 +799,7 @@ export const NewFoodSchedule = ({ personOnADietPlan }) => {
           auxiliaryMatrix[i][33] = result.sum_Selen_Se;
         }
     }
+    console.log("auxiliaryMatrix");
     console.log(auxiliaryMatrix);
     setStatusMatrix(auxiliaryMatrix);
     setFormWithStatusMatrix(true);

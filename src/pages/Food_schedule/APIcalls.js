@@ -11,6 +11,8 @@ export const getRecipeWithHisFullGroceries = async (recipeId) => { // TODO: chan
 }
 
 export const postWeeklyMenu = async (fullData) => {
+    console.log(" BREEE fulldata");
+    console.log(fullData);
     const response = await axios.post(`${process.env.REACT_APP_API}/weeklymenu`, fullData);
     return response.data;
 }
